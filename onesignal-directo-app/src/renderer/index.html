@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none';" />
+  <title>OneSignal Directo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app-boot-overlay" class="app-boot-overlay">
+    <div class="app-boot-spinner" aria-hidden="true"></div>
+    <div class="app-boot-text">Cargando...</div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">OS</div>
+      <div>
+        <h1>OneSignal Directo</h1>
+        <p class="subtitle">DUCSA · envio directo</p>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <div class="nav-group">
+        <div class="nav-group-title">Push</div>
+        <button class="nav-item active" data-view="osDirect">
+          <span class="nav-icon">&#x1F4E1;</span>
+          <span>OneSignal (directo)</span>
+        </button>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <section id="view-osDirect" class="view active">
+      <header class="view-header">
+        <h2>OneSignal (directo)</h2>
+        <p>Se conecta directo a la API REST de OneSignal: trae las <strong>subscriptions</strong> con <code>GET /players</code> (paginado), permite <strong>envio masivo</strong> al segmento <code>Subscribed Users</code> con <a href="#" data-osd-doc="1">throttling configurable</a>, o <strong>envio puntual</strong> filtrando por subscription / player id. Antes de enviar te muestra el <code>curl</code> y el detalle exacto del request. Las credenciales de OneSignal ya vienen incluidas en esta app — no hace falta configurar nada.</p>
+      </header>
+
+      <div class="onesignal-toolbar osd-toolbar">
+        <button id="osd-refresh" class="btn primary" type="button">Traer subscriptions</button>
+        <button id="osd-clear-filters" class="btn" type="button">Limpiar filtros</button>
+        <span id="osd-spinner" class="os-spinner hidden" aria-hidden="true"></span>
+        <div class="osd-toolbar-badges">
+          <span id="osd-count" class="badge badge-strong" title="Subscriptions que pasan los filtros">0</span>
+          <span id="osd-deliverable" class="badge badge-ok" title="Pueden recibir push (suscriptos + token valido)">recibibles: 0</span>
+        </div>
+        <span id="osd-config-summary" class="vc-hint"></span>
+      </div>
+
+      <!-- Tarjeta de filtros: todo client-side sobre las subscriptions ya traidas -->
+      <div class="osd-filters" id="osd-filters">
+        <div class="osd-filters-head">
+          <span class="osd-filters-title">Filtros</span>
+          <div class="osd-filters-toggles">
+            <label class="osd-radio"><input type="checkbox" id="osd-only-receivable" /> Solo recibibles</label>
+            <label class="osd-radio"><input type="checkbox" id="osd-only-users" /> Solo usuarios únicos (1 por External User ID)</label>
+          </div>
+        </div>
+        <div class="osd-filters-grid">
+          <label class="osd-field osd-field-wide">
+            <span>Buscar</span>
+            <input type="text" data-filter="q" placeholder="id, external user id, push token, modelo u OS..." />
+          </label>
+          <label class="osd-field">
+            <span>Estado</span>
+            <select data-filter="status">
+              <option value="all">Todos</option>
+              <option value="receivable">Pueden recibir push</option>
+              <option value="subscribed">Suscriptos</option>
+              <option value="unsubscribed">Desuscriptos</option>
+              <option value="invalid">Token invalido</option>
+              <option value="notoken">Sin push token</option>
+            </select>
+          </label>
+          <label class="osd-field">
+            <span>Plataforma</span>
+            <select data-filter="platform"><option value="">Todas</option></select>
+          </label>
+          <label class="osd-field">
+            <span>Idioma</span>
+            <select data-filter="language"><option value="">Todos</option></select>
+          </label>
+          <label class="osd-field">
+            <span>Sesiones &ge;</span>
+            <input type="number" min="0" step="1" data-filter="minSessions" placeholder="0" />
+          </label>
+          <label class="osd-field">
+            <span>Activa desde</span>
+            <input type="date" data-filter="activeFrom" />
+          </label>
+          <label class="osd-field">
+            <span>Activa hasta</span>
+            <input type="date" data-filter="activeTo" />
+          </label>
+        </div>
+      </div>
+
+      <div id="osd-status" class="status" aria-live="polite"></div>
+
+      <div id="osd-job-banner" class="osd-job-banner hidden" aria-live="polite"></div>
+
+      <div class="onesignal-table-wrap">
+        <table id="osd-table" class="onesignal-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="osd-check-all" title="Seleccionar visibles" /></th>
+              <th>Subscription / Player ID</th>
+              <th>External User ID</th>
+              <th>Plataforma</th>
+              <th>Modelo</th>
+              <th>Push token (identifier)</th>
+              <th>Idioma</th>
+              <th class="osd-col-num">Sesiones</th>
+              <th>Ultima actividad</th>
+            </tr>
+          </thead>
+          <tbody id="osd-tbody">
+            <tr class="os-empty"><td colspan="9">Apreta "Traer subscriptions" para consultar OneSignal.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="osd-compose">
+        <h3 class="os-section-title">Envio</h3>
+
+        <div class="os-mode-tabs" role="tablist">
+          <button type="button" class="os-mode-tab active" data-target="segment" role="tab" aria-selected="true">Masivo (segmento)</button>
+          <button type="button" class="os-mode-tab" data-target="subscriptions" role="tab" aria-selected="false">Lista seleccionada</button>
+          <button type="button" class="os-mode-tab" data-target="single" role="tab" aria-selected="false">Puntual</button>
+        </div>
+
+        <!-- Target: segmento -->
+        <div class="osd-target-block" data-block="segment">
+          <div class="vc-row">
+            <label for="osd-segment">Segmento</label>
+            <input id="osd-segment" type="text" value="Subscribed Users" placeholder="Subscribed Users" />
+            <span class="vc-hint">Apunta a TODOS los suscriptos del segmento.</span>
+          </div>
+        </div>
+
+        <!-- Target: lista seleccionada (envio por bloques con throttle propio) -->
+        <div class="osd-target-block hidden" data-block="subscriptions">
+          <div class="vc-row osd-inline">
+            <label>Origen</label>
+            <label class="osd-radio"><input type="radio" name="osd-bulk-src" value="selected" checked /> Tildadas (<span id="osd-selected-count">0</span>)</label>
+            <label class="osd-radio"><input type="radio" name="osd-bulk-src" value="filtered" /> Todas las filtradas (<span id="osd-filtered-count">0</span>)</label>
+          </div>
+          <div class="vc-row osd-inline">
+            <label for="osd-batch">Tamaño de bloque</label>
+            <input id="osd-batch" type="number" min="1" max="2000" value="1000" />
+            <label for="osd-rate">Ritmo propio (msg/min)</label>
+            <input id="osd-rate" type="number" min="0" step="1" placeholder="0 = sin pausa" />
+          </div>
+          <div class="vc-hint">Envia en bloques (<strong>max 2000 ids/request</strong>, limite de OneSignal). Con ritmo R espera entre bloques para no superar R msg/min — <strong>tu propio throttle</strong>, sin depender del plan. NO usa <code>throttle_rate_per_minute</code>.</div>
+        </div>
+
+        <!-- Target: puntual -->
+        <div class="osd-target-block hidden" data-block="single">
+          <div class="vc-row osd-inline">
+            <label for="osd-id-type">Identificador</label>
+            <select id="osd-id-type">
+              <option value="subscription_id">Subscription / Player ID</option>
+              <option value="player_id">Player ID (legacy)</option>
+              <option value="onesignal_id">OneSignal ID (alias)</option>
+              <option value="external_id">External User ID (alias)</option>
+            </select>
+            <input id="osd-id-value" type="text" placeholder="valor del identificador" />
+          </div>
+          <div class="vc-hint">Tip: tildá una fila de la tabla y usá "Usar fila como puntual" para autocompletar el subscription id.</div>
+        </div>
+
+        <h4 class="os-section-title">Contenido</h4>
+        <div class="vc-row">
+          <label for="osd-title">Titulo</label>
+          <input id="osd-title" type="text" maxlength="120" placeholder="Titulo de la notificacion" />
+        </div>
+        <div class="vc-row">
+          <label for="osd-message">Mensaje</label>
+          <textarea id="osd-message" rows="3" maxlength="1000" placeholder="Cuerpo de la notificacion"></textarea>
+        </div>
+
+        <details class="osd-advanced">
+          <summary>Opciones avanzadas (visual, data, template)</summary>
+          <div class="vc-row">
+            <label for="osd-subtitle">Subtitulo <span class="vc-hint">(iOS)</span></label>
+            <input id="osd-subtitle" type="text" maxlength="120" />
+          </div>
+          <div class="vc-row">
+            <label for="osd-url">URL al tocar</label>
+            <input id="osd-url" type="text" placeholder="https://..." />
+          </div>
+          <div class="vc-row">
+            <label for="osd-large-icon">Icono grande <span class="vc-hint">(URL https)</span></label>
+            <input id="osd-large-icon" type="text" placeholder="https://.../icon.png" />
+          </div>
+          <div class="vc-row">
+            <label for="osd-big-picture">Imagen grande <span class="vc-hint">(URL https)</span></label>
+            <input id="osd-big-picture" type="text" placeholder="https://.../banner.jpg" />
+          </div>
+          <div class="vc-row">
+            <label for="osd-data">Payload <code>data</code> <span class="vc-hint">(JSON)</span></label>
+            <textarea id="osd-data" rows="3" placeholder='{"key": "value"}'></textarea>
+          </div>
+          <div class="vc-row">
+            <label for="osd-template-id">Template ID</label>
+            <input id="osd-template-id" type="text" placeholder="ej: 9a3b...c1d2" />
+          </div>
+        </details>
+
+        <h4 class="os-section-title">Throttling &amp; delivery</h4>
+        <div class="vc-row osd-inline">
+          <label for="osd-throttle">throttle_rate_per_minute</label>
+          <input id="osd-throttle" type="number" min="0" step="1" placeholder="0 = sin throttling" />
+          <span class="vc-hint">msg/min. <strong>0/vacio = no enviar el campo</strong>. Es feature de pago de OneSignal: si tu plan no la incluye, dejalo en 0.</span>
+        </div>
+        <div class="vc-row osd-inline">
+          <label for="osd-ttl">ttl</label>
+          <input id="osd-ttl" type="number" min="0" step="1" placeholder="segundos (opcional)" />
+          <label for="osd-priority">priority</label>
+          <input id="osd-priority" type="number" step="1" placeholder="10 = alta (Android)" />
+        </div>
+        <div class="vc-row osd-inline">
+          <label for="osd-delayed">delayed_option</label>
+          <select id="osd-delayed">
+            <option value="immediate">Inmediato</option>
+            <option value="timezone">Por timezone del usuario</option>
+            <option value="last-active">Por ultima actividad (Intelligent)</option>
+          </select>
+          <label for="osd-tod">delivery_time_of_day</label>
+          <input id="osd-tod" type="text" placeholder="ej: 9:00AM" />
+        </div>
+        <div class="vc-row osd-inline">
+          <label for="osd-send-after">send_after</label>
+          <input id="osd-send-after" type="text" placeholder="ej: 2026-06-20 10:00:00 GMT-0300" />
+          <span class="vc-hint">Programa el envio. Throttling tiene prioridad sobre timezone/intelligent delivery.</span>
+        </div>
+
+        <div class="modal-actions" style="margin-top:14px;">
+          <button id="osd-preview-btn" class="btn primary" type="button">Previsualizar (curl + detalle)</button>
+        </div>
+      </div>
+
+      <div id="osd-log" class="dt-log"></div>
+    </section>
+  </main>
+
+  <!-- Preview modal: muestra el curl + body exacto antes de confirmar el envio -->
+  <div id="osd-preview-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-osd-close="1"></div>
+    <div class="modal-dialog modal-wide" role="dialog" aria-labelledby="osd-preview-title">
+      <header class="modal-head">
+        <h3 id="osd-preview-title">Confirmar envio</h3>
+        <button class="btn" type="button" data-osd-close="1">Cerrar</button>
+      </header>
+      <div class="modal-body">
+        <div class="osd-preview-target">
+          <div><strong>Destino:</strong> <span id="osd-preview-target-text"></span></div>
+          <div class="vc-hint"><strong>POST</strong> <span class="mono" id="osd-preview-url"></span></div>
+          <div class="vc-hint" id="osd-preview-throttle"></div>
+        </div>
+
+        <h4 class="os-section-title">Detalle del request (body JSON)</h4>
+        <div class="osd-codeblock-wrap">
+          <button class="btn osd-copy" type="button" data-copy="body">Copiar JSON</button>
+          <pre class="osd-codeblock"><code id="osd-preview-body"></code></pre>
+        </div>
+
+        <h4 class="os-section-title">curl</h4>
+        <div class="vc-hint">La <code>REST API key</code> va enmascarada por seguridad: reemplazala por la real para correrlo desde una terminal.</div>
+        <div class="osd-codeblock-wrap">
+          <button class="btn osd-copy" type="button" data-copy="curl">Copiar curl</button>
+          <pre class="osd-codeblock"><code id="osd-preview-curl"></code></pre>
+        </div>
+
+        <div id="osd-preview-status" class="status" aria-live="polite"></div>
+      </div>
+      <footer class="modal-foot">
+        <div class="vc-hint osd-bulk-hint hidden" id="osd-bulk-hint">Tip: el envío corre en segundo plano. Podés cerrar esta ventana y seguir el progreso (msgs enviados, bloques OK/fallidos) en el banner de arriba. Se guarda checkpoint por bloque: es pausable y reanudable.</div>
+        <div class="modal-actions">
+          <button class="btn" type="button" data-osd-close="1">Cancelar</button>
+          <button id="osd-cancel-bulk" class="btn hidden" type="button">Pausar</button>
+          <button id="osd-confirm-send" class="btn primary" type="button">Confirmar y enviar</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="bootOverlay.js"></script>
+  <script src="app.js"></script>
+  <script src="views/osDirectView.js"></script>
+</body>
+</html>

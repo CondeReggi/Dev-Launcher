@@ -1,0 +1,39 @@
+{
+  "name": "dev-launcher-team",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dev Launcher (Equipo): las herramientas de trabajo de Dev Launcher (Proyectos, DUCSA Tools, B2B, Graph Users, Plexo, Facturacion, Reportes, Jira, Outlook, QR, OneSignal, Utilidades) empaquetadas como .exe para compartir con el equipo, sin las secciones personales.",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --devtools",
+    "dist": "electron-builder"
+  },
+  "author": "lconde",
+  "license": "ISC",
+  "dependencies": {
+    "jimp": "^1.6.1",
+    "jsqr": "^1.4.0",
+    "mssql": "^11.0.1",
+    "qrcode": "^1.5.3",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "uy.ducsa.dev-launcher-team",
+    "productName": "Dev Launcher (Equipo)",
+    "files": [
+      "src/**/*"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "src/renderer/assets/icon.png"
+    },
+    "portable": {
+      "artifactName": "DevLauncherEquipo-${version}.exe"
+    }
+  }
+}

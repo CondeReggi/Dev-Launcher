@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.log
+
+# Credenciales reales de OneSignal (App ID + REST API Key). Se empaquetan
+# dentro del .exe al buildear (npm run dist), pero nunca se commitean.
+src/config/oneSignal.config.js

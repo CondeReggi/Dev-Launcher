@@ -1,0 +1,24 @@
+node_modules/
+dist/
+out/
+*.log
+.DS_Store
+
+# IDE / herramientas locales
+.vs/
+.vscode/
+.claude/
+
+# ---------------------------------------------------------------------------
+# Config local con credenciales y datos reales - NUNCA commitear.
+# Cada uno tiene su plantilla committeada <name>.config.example.js; para usar
+# datos reales: copiar la plantilla a <name>.config.js y completarla.
+# Aplica a src/ y a las subapps (dev-launcher-team/, onesignal-directo-app/).
+# ---------------------------------------------------------------------------
+**/src/config/sendQr.config.js
+**/src/config/sendQr.overrides.json
+**/src/config/oneSignal.config.js
+**/src/config/oneSignal.overrides.json
+**/src/config/projects.config.js
+**/src/config/apps.config.js
+*.bak

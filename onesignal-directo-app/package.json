@@ -1,0 +1,32 @@
+{
+  "name": "onesignal-directo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "App standalone que replica la seccion 'OneSignal (directo)' de Dev Launcher: envio de push notifications directo contra la API REST de OneSignal.",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --devtools",
+    "dist": "electron-builder"
+  },
+  "author": "lconde",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "uy.ducsa.onesignal-directo",
+    "productName": "OneSignal Directo",
+    "files": [
+      "src/**/*"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "src/renderer/assets/icon.png"
+    },
+    "portable": {
+      "artifactName": "OneSignalDirecto-${version}.exe"
+    }
+  }
+}

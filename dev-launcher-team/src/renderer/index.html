@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none';" />
+  <title>Dev Launcher</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app-boot-overlay" class="app-boot-overlay">
+    <div class="app-boot-spinner" aria-hidden="true"></div>
+    <div class="app-boot-text">Cargando...</div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">DL</div>
+      <div>
+        <h1>Dev Launcher</h1>
+        <p class="subtitle">Local toolbox</p>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <div class="nav-group" data-workshop="trabajo">
+        <div class="nav-group-title">Dev</div>
+        <button class="nav-item active" data-view="projects">
+          <span class="nav-icon">&#x1F4C1;</span>
+          <span>Proyectos</span>
+        </button>
+        <button class="nav-item" data-view="projectsMobile">
+          <span class="nav-icon">&#x1F4F1;</span>
+          <span>Proyectos Mobile</span>
+        </button>
+      </div>
+
+      <div class="nav-group" data-workshop="trabajo">
+        <div class="nav-group-title">Facturacion</div>
+        <button class="nav-item" data-view="factura">
+          <span class="nav-icon">&#x1F9FE;</span>
+          <span>Generacion de Facturas</span>
+        </button>
+      </div>
+
+      <div class="nav-group" data-workshop="trabajo">
+        <div class="nav-group-title">Reportes</div>
+        <button class="nav-item" data-view="reportes">
+          <span class="nav-icon">&#x1F4CA;</span>
+          <span>Reportes recurrentes</span>
+        </button>
+      </div>
+
+      <div class="nav-group" data-workshop="trabajo">
+        <div class="nav-group-title">Tareas</div>
+        <button class="nav-item" data-view="jira">
+          <span class="nav-icon">&#x1F4CB;</span>
+          <span>Mis tareas (Jira)</span>
+        </button>
+      </div>
+
+      <div class="nav-group" data-workshop="trabajo">
+        <div class="nav-group-title">Correo</div>
+        <button class="nav-item" data-view="outlook">
+          <span class="nav-icon">&#x1F4E7;</span>
+          <span>Codigos TuPase (Outlook)</span>
+        </button>
+      </div>
+
+      <div class="nav-group" data-workshop="trabajo">
+        <div class="nav-group-title">QR</div>
+        <button class="nav-item" data-view="qr">
+          <span class="nav-icon">&#x25A6;</span>
+          <span>Generador QR</span>
+        </button>
+        <button class="nav-item" data-view="qrParse">
+          <span class="nav-icon">&#x1F50D;</span>
+          <span>Parseo de QR</span>
+        </button>
+        <button class="nav-item" data-view="qrRead">
+          <span class="nav-icon">&#x1F4F7;</span>
+          <span>Leer QR (imagen)</span>
+        </button>
+      </div>
+
+      <div class="nav-group" data-workshop="trabajo">
+        <div class="nav-group-title">DUCSA</div>
+        <button class="nav-item" data-view="ducsaTools">
+          <span class="nav-icon">&#x1F527;</span>
+          <span>DUCSA Tools</span>
+        </button>
+        <button class="nav-item" data-view="b2bCreds">
+          <span class="nav-icon">&#x1F510;</span>
+          <span>Credenciales B2B</span>
+        </button>
+        <button class="nav-item" data-view="graphUsers">
+          <span class="nav-icon">&#x1F465;</span>
+          <span>Usuarios B2C (Graph)</span>
+        </button>
+        <button class="nav-item" data-view="plexoCards">
+          <span class="nav-icon">&#x1F4B3;</span>
+          <span>Tarjetas Plexo</span>
+        </button>
+        <button class="nav-item" data-view="plexoRefund">
+          <span class="nav-icon">&#x21A9;</span>
+          <span>Devolucion Plexo</span>
+        </button>
+      </div>
+
+      <div class="nav-group" data-workshop="trabajo">
+        <div class="nav-group-title">Push</div>
+        <button class="nav-item" data-view="oneSignal">
+          <span class="nav-icon">&#x1F514;</span>
+          <span>Notificaciones OneSignal</span>
+        </button>
+        <button class="nav-item" data-view="osDirect">
+          <span class="nav-icon">&#x1F4E1;</span>
+          <span>OneSignal (directo)</span>
+        </button>
+      </div>
+
+      <div class="nav-group" data-workshop="trabajo">
+        <div class="nav-group-title">Utilidades</div>
+        <button class="nav-item" data-view="jsonTool">
+          <span class="nav-icon">&#x1F4C4;</span>
+          <span>JSON (formato / validar)</span>
+        </button>
+        <button class="nav-item" data-view="jwtDecode">
+          <span class="nav-icon">&#x1F511;</span>
+          <span>Decode JWT</span>
+        </button>
+        <button class="nav-item" data-view="hosts">
+          <span class="nav-icon">&#x1F4DD;</span>
+          <span>Hosts (archivo)</span>
+        </button>
+      </div>
+    </nav>
+
+    <button id="btn-settings" class="sidebar-settings" type="button" title="Configuracion sendQr">
+      <span class="nav-icon">&#x2699;</span>
+      <span>Configuracion</span>
+    </button>
+
+    <button class="env-indicator" id="env-indicator" type="button" title="Ctrl+E para cambiar de ambiente">
+      <span id="env-indicator-label">Ambiente: Testing</span>
+      <span class="env-indicator-hint">Ctrl+E</span>
+    </button>
+  </aside>
+
+  <div id="settings-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" role="dialog" aria-labelledby="settings-modal-title">
+      <header class="modal-head">
+        <h3 id="settings-modal-title">Configuracion</h3>
+        <button id="settings-close" class="btn" type="button">Cerrar</button>
+      </header>
+      <div class="settings-layout">
+        <nav id="settings-tabs" class="settings-sidebar" aria-label="Secciones de configuracion"></nav>
+        <div class="settings-main">
+          <p class="modal-hint">Los cambios de configuracion se guardan por-persona (carpeta de datos local) al tocar <strong>Guardar</strong>. El baseline compartido con el equipo no se modifica. La pestaña <strong>Jira</strong> es la unica que conviene tocar: cada uno carga su propio email/token ahi.</p>
+          <div id="settings-body" class="modal-body"></div>
+        </div>
+      </div>
+      <footer class="modal-foot">
+        <span id="settings-status" class="status"></span>
+        <div class="modal-actions">
+          <button id="settings-reset" class="btn" type="button" title="Borra todos los overrides y vuelve al baseline del .js">Resetear overrides</button>
+          <button id="settings-cancel" class="btn" type="button">Cancelar</button>
+          <button id="settings-save" class="btn primary" type="button">Guardar</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <main class="content">
+    <section id="view-projects" class="view active">
+      <header class="view-header">
+        <h2>Proyectos</h2>
+        <p>Hace click en una card para ver acciones y comandos. Cada accion dispara UAC. La estrella marca favoritos (quedan siempre arriba); la ramita muestra la rama git actual y si hay cambios sin commitear.</p>
+      </header>
+      <div class="gu-toolbar projects-toolbar">
+        <label class="gu-toolbar-field gu-toolbar-search">
+          <span>Buscar</span>
+          <input id="projects-search" type="text" placeholder="Nombre o descripcion..." />
+        </label>
+      </div>
+      <div class="projects-layout">
+        <div id="projects-list" class="cards-grid"></div>
+        <aside id="project-detail" class="project-detail">
+          <div class="placeholder">Selecciona un proyecto para ver acciones y comandos.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="view-projectsMobile" class="view">
+      <header class="view-header">
+        <h2>Proyectos Mobile</h2>
+        <p>Proyectos mobile (MAUI, Xamarin, etc). Cada accion dispara UAC.</p>
+      </header>
+      <div class="gu-toolbar projects-toolbar">
+        <label class="gu-toolbar-field gu-toolbar-search">
+          <span>Buscar</span>
+          <input id="projects-mobile-search" type="text" placeholder="Nombre o descripcion..." />
+        </label>
+      </div>
+      <div class="projects-layout">
+        <div id="projects-mobile-list" class="cards-grid"></div>
+        <aside id="project-mobile-detail" class="project-detail">
+          <div class="placeholder">Selecciona un proyecto para ver acciones y comandos.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="view-qr" class="view">
+      <header class="view-header">
+        <h2>Generador QR</h2>
+        <p>Pega cualquier string y genera el QR.</p>
+      </header>
+      <div class="qr-grid">
+        <div class="qr-input-card">
+          <label for="qr-text">Texto / URL</label>
+          <textarea id="qr-text" rows="6" placeholder="https://..."></textarea>
+          <div class="actions">
+            <button id="qr-generate" class="btn primary">Generar QR</button>
+            <button id="qr-clear" class="btn">Limpiar</button>
+            <button id="qr-copy" class="btn">Copiar texto</button>
+          </div>
+          <div id="qr-status" class="status" aria-live="polite"></div>
+        </div>
+        <div class="qr-output-card">
+          <div id="qr-canvas" class="qr-canvas placeholder">QR aparecera aqui</div>
+          <button id="qr-download" class="btn primary" disabled>Descargar PNG</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-qrParse" class="view">
+      <header class="view-header">
+        <h2>Parseo de QR</h2>
+        <p>Pega el contenido crudo del QR (formato cabecera<code>|</code>linea<code>|</code>linea...) y vas a ver cada valor mapeado a su clave de <code>QrDatos</code> y a la propiedad equivalente de <code>QrDatosValidado</code>.</p>
+      </header>
+      <div class="qr-parse-grid">
+        <div class="qr-input-card">
+          <label for="qrp-text">QR string</label>
+          <textarea id="qrp-text" rows="6" placeholder="A;3783529;1;...|...;...;..."></textarea>
+          <div class="actions">
+            <button id="qrp-parse" class="btn primary">Parsear</button>
+            <button id="qrp-sample" class="btn">Cargar ejemplo</button>
+            <button id="qrp-clear" class="btn">Limpiar</button>
+            <button id="qrp-send-generator" class="btn" title="Generar imagen QR con este texto">&#x25A6; Generar imagen</button>
+          </div>
+          <div id="qrp-status" class="status" aria-live="polite"></div>
+        </div>
+
+        <div class="qr-parse-output">
+          <div class="parse-card">
+            <div class="parse-card-header">
+              <h3>Cabecera</h3>
+              <span id="qrp-header-count" class="badge"></span>
+            </div>
+            <div class="table-wrap"><table id="qrp-header-table"><thead><tr><th>#</th><th>QrDatos</th><th>QrDatosValidado</th><th>Tipo</th><th>Valor</th></tr></thead><tbody></tbody></table></div>
+          </div>
+
+          <div id="qrp-lines-container"></div>
+
+          <div class="parse-card">
+            <div class="parse-card-header">
+              <h3>JSON</h3>
+              <div class="actions">
+                <button id="qrp-copy-json" class="btn" disabled>Copiar JSON</button>
+                <button id="qrp-download-json" class="btn" disabled>Descargar .json</button>
+              </div>
+            </div>
+            <pre id="qrp-json" class="json-block"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-qrRead" class="view">
+      <header class="view-header">
+        <h2>Leer QR (imagen)</h2>
+        <p>Subi una imagen (PNG / JPG / BMP) o pega una desde el portapapeles y la app extrae el contenido del QR. Si pinta como QR de DGI/SUCIVE, podés mandarlo al parser con un click.</p>
+      </header>
+
+      <div class="qr-read-grid">
+        <div class="qr-read-input-card">
+          <div id="qrr-drop" class="qrr-drop">
+            <input id="qrr-file" type="file" accept="image/*" hidden />
+            <div class="qrr-drop-inner">
+              <div class="qrr-drop-icon">&#x1F4F7;</div>
+              <p><strong>Arrastra una imagen aqui</strong> o</p>
+              <button id="qrr-pick" class="btn primary" type="button">Elegir archivo</button>
+              <p class="qrr-hint">Tambien podés pegar con Ctrl+V una imagen del portapapeles.</p>
+            </div>
+          </div>
+
+          <div id="qrr-preview-wrap" class="qrr-preview hidden">
+            <img id="qrr-preview" alt="Imagen del QR" />
+            <div class="actions">
+              <button id="qrr-decode" class="btn primary" type="button">Leer QR</button>
+              <button id="qrr-reset" class="btn" type="button">Quitar imagen</button>
+            </div>
+          </div>
+
+          <div id="qrr-status" class="status" aria-live="polite"></div>
+        </div>
+
+        <div class="qr-read-output-card">
+          <div class="parse-card-header">
+            <h3>Contenido</h3>
+            <div class="actions">
+              <button id="qrr-copy" class="btn" type="button" disabled>Copiar</button>
+              <button id="qrr-send-parse" class="btn" type="button" disabled>Enviar a Parseo de QR</button>
+            </div>
+          </div>
+          <textarea id="qrr-result" rows="10" readonly placeholder="El contenido aparecera aqui."></textarea>
+          <div id="qrr-meta" class="qrr-meta"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-b2bCreds" class="view">
+      <header class="view-header">
+        <h2>Credenciales B2B</h2>
+        <p>ROPC contra Azure AD B2C, extrae <code>emails[0]</code> del JWT y autentica contra <code>Auth/login</code>. URLs y client_id editables desde Configuracion (tab "B2B Cred").</p>
+      </header>
+
+      <div class="b2b-grid">
+        <div class="b2b-form-card">
+          <span class="env-badge env-badge-corner" id="b2b-env-badge"></span>
+          <div class="b2b-form-row">
+            <label>
+              <span>Usuario</span>
+              <input id="b2b-user" type="text" placeholder="documento o email" />
+            </label>
+            <label>
+              <span>Password</span>
+              <input id="b2b-pass" type="password" />
+            </label>
+          </div>
+          <div class="b2b-form-row b2b-meta-info">
+            <small id="b2b-env-summary"></small>
+          </div>
+          <div class="actions">
+            <button id="b2b-run" class="btn primary">Obtener credenciales</button>
+            <button id="b2b-clear" class="btn">Limpiar resultado</button>
+          </div>
+          <div id="b2b-status" class="status" aria-live="polite"></div>
+        </div>
+
+        <div id="b2b-result" class="b2b-result hidden">
+          <div class="b2b-token-card" data-token="b2c">
+            <div class="b2b-token-head">
+              <h4>B2C access_token</h4>
+              <div class="b2b-token-actions">
+                <button class="btn btn-copy" data-copy="b2c-token">Copiar token</button>
+                <button class="btn btn-toggle" data-toggle="b2c-decoded">Ver decoded</button>
+                <button class="btn btn-copy-decoded hidden" data-copy="b2c-decoded">Copiar JSON</button>
+              </div>
+            </div>
+            <textarea class="b2b-token-text" data-field="b2c-token" readonly></textarea>
+            <pre class="b2b-decoded hidden" data-field="b2c-decoded"></pre>
+          </div>
+
+          <div class="b2b-token-card" data-token="api">
+            <div class="b2b-token-head">
+              <h4>API token (Auth/login)</h4>
+              <div class="b2b-token-actions">
+                <button class="btn btn-copy" data-copy="api-token">Copiar token</button>
+                <button class="btn btn-toggle" data-toggle="api-decoded">Ver decoded</button>
+                <button class="btn btn-copy-decoded hidden" data-copy="api-decoded">Copiar JSON</button>
+              </div>
+            </div>
+            <textarea class="b2b-token-text" data-field="api-token" readonly></textarea>
+            <pre class="b2b-decoded hidden" data-field="api-decoded"></pre>
+          </div>
+
+          <div class="b2b-meta">
+            <div class="b2b-meta-row"><strong>Email:</strong> <span data-field="email"></span></div>
+            <div class="b2b-meta-row"><strong>tokenQr:</strong> <span class="mono" data-field="tokenQr"></span> <button class="btn btn-copy mini" data-copy="tokenQr">Copiar</button></div>
+            <div class="b2b-meta-row"><strong>codigoVerificacion:</strong> <span class="mono" data-field="codigoVerificacion"></span></div>
+            <div class="b2b-meta-row"><strong>usuarioAceptaTerminos:</strong> <span data-field="usuarioAceptaTerminos"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="b2b-log" class="dt-log b2b-log"></div>
+    </section>
+
+    <section id="view-oneSignal" class="view">
+      <header class="view-header">
+        <h2>Notificaciones OneSignal</h2>
+        <p>Lista de dispositivos con <code>PnsHandle</code> registrado en SQL Server (<code>RegistroDispositivo</code> JOIN <code>Usuario</code>). Conexion y credenciales se leen de <code>src/config/oneSignal.config.js</code> (gitignored) o de las env vars <code>DEVL_APP_CS</code> / <code>DEVL_ONESIGNAL_APP_ID</code> / <code>DEVL_ONESIGNAL_API_KEY</code>.</p>
+      </header>
+
+      <div class="onesignal-toolbar">
+        <button id="os-refresh" class="btn primary" type="button">Recargar</button>
+        <button id="os-clear-filters" class="btn" type="button">Limpiar filtros</button>
+        <span id="os-count" class="badge">0</span>
+        <span id="os-spinner" class="os-spinner hidden" aria-hidden="true"></span>
+        <span id="os-config-summary" class="vc-hint"></span>
+      </div>
+
+      <div id="os-status" class="status" aria-live="polite"></div>
+
+      <div class="onesignal-table-wrap">
+        <table id="os-table" class="onesignal-table">
+          <thead>
+            <tr>
+              <th>UsuarioId</th>
+              <th>Documento</th>
+              <th>Email</th>
+              <th>Celular</th>
+              <th>Plataforma</th>
+              <th>PnsHandle</th>
+              <th></th>
+            </tr>
+            <tr class="os-filter-row">
+              <th><input type="text" data-filter="usuarioId" placeholder="filtrar..." /></th>
+              <th><input type="text" data-filter="documento" placeholder="filtrar..." /></th>
+              <th><input type="text" data-filter="email" placeholder="filtrar..." /></th>
+              <th><input type="text" data-filter="celular" placeholder="filtrar..." /></th>
+              <th><input type="text" data-filter="plataforma" placeholder="filtrar..." /></th>
+              <th><input type="text" data-filter="pnsHandle" placeholder="filtrar..." /></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="os-tbody">
+            <tr class="os-empty"><td colspan="7">Apreta "Recargar" o escribi en un filtro para consultar dispositivos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="os-log" class="dt-log"></div>
+    </section>
+
+    <div id="os-send-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-os-close="1"></div>
+      <div class="modal-dialog" role="dialog" aria-labelledby="os-send-modal-title">
+        <header class="modal-head">
+          <h3 id="os-send-modal-title">Enviar notificacion push</h3>
+          <button class="btn" type="button" data-os-close="1">Cerrar</button>
+        </header>
+        <div class="modal-body">
+          <div class="os-target">
+            <div><strong>Destinatario:</strong> <span id="os-target-user"></span></div>
+            <div class="vc-hint">PnsHandle: <span class="mono" id="os-target-handle"></span></div>
+          </div>
+
+          <div class="os-mode-tabs" role="tablist">
+            <button type="button" class="os-mode-tab active" data-mode="standard" role="tab" aria-selected="true">Standard</button>
+            <button type="button" class="os-mode-tab" data-mode="custom" role="tab" aria-selected="false">Custom</button>
+          </div>
+
+          <div class="vc-row">
+            <label for="os-title">Titulo</label>
+            <input id="os-title" type="text" maxlength="120" placeholder="Titulo de la notificacion" />
+          </div>
+          <div class="vc-row">
+            <label for="os-message">Mensaje</label>
+            <textarea id="os-message" rows="4" maxlength="500" placeholder="Cuerpo de la notificacion"></textarea>
+          </div>
+
+          <div id="os-custom-fields" class="os-custom-fields hidden">
+            <h4 class="os-section-title">Visual</h4>
+
+            <div class="vc-row">
+              <label for="os-subtitle">Subtitulo <span class="vc-hint">(iOS)</span></label>
+              <input id="os-subtitle" type="text" maxlength="120" placeholder="Texto secundario en iOS" />
+            </div>
+
+            <div class="vc-row">
+              <label for="os-large-icon">Icono grande <span class="vc-hint">(URL https, Android)</span></label>
+              <input id="os-large-icon" type="text" placeholder="https://.../icon.png" />
+            </div>
+
+            <div class="vc-row">
+              <label for="os-big-picture">Imagen grande <span class="vc-hint">(URL https, Android vista expandida)</span></label>
+              <input id="os-big-picture" type="text" placeholder="https://.../banner.jpg" />
+            </div>
+
+            <h4 class="os-section-title">Comportamiento</h4>
+
+            <div class="vc-row">
+              <label for="os-url">URL al tocar <span class="vc-hint">(opcional)</span></label>
+              <input id="os-url" type="text" placeholder="https://..." />
+            </div>
+
+            <div class="vc-row">
+              <label for="os-data">Payload <code>data</code> <span class="vc-hint">(JSON, opcional)</span></label>
+              <textarea id="os-data" rows="3" placeholder='{"key": "value"}'></textarea>
+            </div>
+
+            <div class="vc-row">
+              <label for="os-template-id">Template ID <span class="vc-hint">(opcional · si lo seteas, OneSignal usa esa plantilla del dashboard)</span></label>
+              <input id="os-template-id" type="text" placeholder="ej: 9a3b...c1d2" />
+            </div>
+          </div>
+
+          <div id="os-send-status" class="status" aria-live="polite"></div>
+        </div>
+        <footer class="modal-foot">
+          <div class="modal-actions">
+            <button class="btn" type="button" data-os-close="1">Cancelar</button>
+            <button id="os-send" class="btn primary" type="button">Enviar</button>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <section id="view-osDirect" class="view">
+      <header class="view-header">
+        <h2>OneSignal (directo)</h2>
+        <p>Se conecta directo a la API REST de OneSignal: trae las <strong>subscriptions</strong> con <code>GET /players</code> (paginado), permite <strong>envio masivo</strong> al segmento <code>Subscribed Users</code> con <a href="#" data-osd-doc="1">throttling configurable</a>, o <strong>envio puntual</strong> filtrando por subscription / player id. Antes de enviar te muestra el <code>curl</code> y el detalle exacto del request. Credenciales: <code>src/config/oneSignal.config.js</code> (gitignored).</p>
+      </header>
+
+      <div class="onesignal-toolbar osd-toolbar">
+        <button id="osd-refresh" class="btn primary" type="button">Traer subscriptions</button>
+        <button id="osd-clear-filters" class="btn" type="button">Limpiar filtros</button>
+        <span id="osd-spinner" class="os-spinner hidden" aria-hidden="true"></span>
+        <div class="osd-toolbar-badges">
+          <span id="osd-count" class="badge badge-strong" title="Subscriptions que pasan los filtros">0</span>
+          <span id="osd-deliverable" class="badge badge-ok" title="Pueden recibir push (suscriptos + token valido)">recibibles: 0</span>
+        </div>
+        <span id="osd-config-summary" class="vc-hint"></span>
+      </div>
+
+      <!-- Tarjeta de filtros: todo client-side sobre las subscriptions ya traidas -->
+      <div class="osd-filters" id="osd-filters">
+        <div class="osd-filters-head">
+          <span class="osd-filters-title">Filtros</span>
+          <div class="osd-filters-toggles">
+            <label class="osd-radio"><input type="checkbox" id="osd-only-receivable" /> Solo recibibles</label>
+            <label class="osd-radio"><input type="checkbox" id="osd-only-users" /> Solo usuarios únicos (1 por External User ID)</label>
+          </div>
+        </div>
+        <div class="osd-filters-grid">
+          <label class="osd-field osd-field-wide">
+            <span>Buscar</span>
+            <input type="text" data-filter="q" placeholder="id, external user id, push token, modelo u OS..." />
+          </label>
+          <label class="osd-field">
+            <span>Estado</span>
+            <select data-filter="status">
+              <option value="all">Todos</option>
+              <option value="receivable">Pueden recibir push</option>
+              <option value="subscribed">Suscriptos</option>
+              <option value="unsubscribed">Desuscriptos</option>
+              <option value="invalid">Token invalido</option>
+              <option value="notoken">Sin push token</option>
+            </select>
+          </label>
+          <label class="osd-field">
+            <span>Plataforma</span>
+            <select data-filter="platform"><option value="">Todas</option></select>
+          </label>
+          <label class="osd-field">
+            <span>Idioma</span>
+            <select data-filter="language"><option value="">Todos</option></select>
+          </label>
+          <label class="osd-field">
+            <span>Sesiones &ge;</span>
+            <input type="number" min="0" step="1" data-filter="minSessions" placeholder="0" />
+          </label>
+          <label class="osd-field">
+            <span>Activa desde</span>
+            <input type="date" data-filter="activeFrom" />
+          </label>
+          <label class="osd-field">
+            <span>Activa hasta</span>
+            <input type="date" data-filter="activeTo" />
+          </label>
+        </div>
+      </div>
+
+      <div id="osd-status" class="status" aria-live="polite"></div>
+
+      <div id="osd-job-banner" class="osd-job-banner hidden" aria-live="polite"></div>
+
+      <div class="onesignal-table-wrap">
+        <table id="osd-table" class="onesignal-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="osd-check-all" title="Seleccionar visibles" /></th>
+              <th>Subscription / Player ID</th>
+              <th>External User ID</th>
+              <th>Plataforma</th>
+              <th>Modelo</th>
+              <th>Push token (identifier)</th>
+              <th>Idioma</th>
+              <th class="osd-col-num">Sesiones</th>
+              <th>Ultima actividad</th>
+            </tr>
+          </thead>
+          <tbody id="osd-tbody">
+            <tr class="os-empty"><td colspan="9">Apreta "Traer subscriptions" para consultar OneSignal.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="osd-compose">
+        <h3 class="os-section-title">Envio</h3>
+
+        <div class="os-mode-tabs" role="tablist">
+          <button type="button" class="os-mode-tab active" data-target="segment" role="tab" aria-selected="true">Masivo (segmento)</button>
+          <button type="button" class="os-mode-tab" data-target="subscriptions" role="tab" aria-selected="false">Lista seleccionada</button>
+          <button type="button" class="os-mode-tab" data-target="single" role="tab" aria-selected="false">Puntual</button>
+        </div>
+
+        <!-- Target: segmento -->
+        <div class="osd-target-block" data-block="segment">
+          <div class="vc-row">
+            <label for="osd-segment">Segmento</label>
+            <input id="osd-segment" type="text" value="Subscribed Users" placeholder="Subscribed Users" />
+            <span class="vc-hint">Apunta a TODOS los suscriptos del segmento.</span>
+          </div>
+        </div>
+
+        <!-- Target: lista seleccionada (envio por bloques con throttle propio) -->
+        <div class="osd-target-block hidden" data-block="subscriptions">
+          <div class="vc-row osd-inline">
+            <label>Origen</label>
+            <label class="osd-radio"><input type="radio" name="osd-bulk-src" value="selected" checked /> Tildadas (<span id="osd-selected-count">0</span>)</label>
+            <label class="osd-radio"><input type="radio" name="osd-bulk-src" value="filtered" /> Todas las filtradas (<span id="osd-filtered-count">0</span>)</label>
+          </div>
+          <div class="vc-row osd-inline">
+            <label for="osd-batch">Tamaño de bloque</label>
+            <input id="osd-batch" type="number" min="1" max="2000" value="1000" />
+            <label for="osd-rate">Ritmo propio (msg/min)</label>
+            <input id="osd-rate" type="number" min="0" step="1" placeholder="0 = sin pausa" />
+          </div>
+          <div class="vc-hint">Envia en bloques (<strong>max 2000 ids/request</strong>, limite de OneSignal). Con ritmo R espera entre bloques para no superar R msg/min — <strong>tu propio throttle</strong>, sin depender del plan. NO usa <code>throttle_rate_per_minute</code>.</div>
+        </div>
+
+        <!-- Target: puntual -->
+        <div class="osd-target-block hidden" data-block="single">
+          <div class="vc-row osd-inline">
+            <label for="osd-id-type">Identificador</label>
+            <select id="osd-id-type">
+              <option value="subscription_id">Subscription / Player ID</option>
+              <option value="player_id">Player ID (legacy)</option>
+              <option value="onesignal_id">OneSignal ID (alias)</option>
+              <option value="external_id">External User ID (alias)</option>
+            </select>
+            <input id="osd-id-value" type="text" placeholder="valor del identificador" />
+          </div>
+          <div class="vc-hint">Tip: tildá una fila de la tabla y usá "Usar fila como puntual" para autocompletar el subscription id.</div>
+        </div>
+
+        <h4 class="os-section-title">Contenido</h4>
+        <div class="vc-row">
+          <label for="osd-title">Titulo</label>
+          <input id="osd-title" type="text" maxlength="120" placeholder="Titulo de la notificacion" />
+        </div>
+        <div class="vc-row">
+          <label for="osd-message">Mensaje</label>
+          <textarea id="osd-message" rows="3" maxlength="1000" placeholder="Cuerpo de la notificacion"></textarea>
+        </div>
+
+        <details class="osd-advanced">
+          <summary>Opciones avanzadas (visual, data, template)</summary>
+          <div class="vc-row">
+            <label for="osd-subtitle">Subtitulo <span class="vc-hint">(iOS)</span></label>
+            <input id="osd-subtitle" type="text" maxlength="120" />
+          </div>
+          <div class="vc-row">
+            <label for="osd-url">URL al tocar</label>
+            <input id="osd-url" type="text" placeholder="https://..." />
+          </div>
+          <div class="vc-row">
+            <label for="osd-large-icon">Icono grande <span class="vc-hint">(URL https)</span></label>
+            <input id="osd-large-icon" type="text" placeholder="https://.../icon.png" />
+          </div>
+          <div class="vc-row">
+            <label for="osd-big-picture">Imagen grande <span class="vc-hint">(URL https)</span></label>
+            <input id="osd-big-picture" type="text" placeholder="https://.../banner.jpg" />
+          </div>
+          <div class="vc-row">
+            <label for="osd-data">Payload <code>data</code> <span class="vc-hint">(JSON)</span></label>
+            <textarea id="osd-data" rows="3" placeholder='{"key": "value"}'></textarea>
+          </div>
+          <div class="vc-row">
+            <label for="osd-template-id">Template ID</label>
+            <input id="osd-template-id" type="text" placeholder="ej: 9a3b...c1d2" />
+          </div>
+        </details>
+
+        <h4 class="os-section-title">Throttling &amp; delivery</h4>
+        <div class="vc-row osd-inline">
+          <label for="osd-throttle">throttle_rate_per_minute</label>
+          <input id="osd-throttle" type="number" min="0" step="1" placeholder="0 = sin throttling" />
+          <span class="vc-hint">msg/min. <strong>0/vacio = no enviar el campo</strong>. Es feature de pago de OneSignal: si tu plan no la incluye, dejalo en 0.</span>
+        </div>
+        <div class="vc-row osd-inline">
+          <label for="osd-ttl">ttl</label>
+          <input id="osd-ttl" type="number" min="0" step="1" placeholder="segundos (opcional)" />
+          <label for="osd-priority">priority</label>
+          <input id="osd-priority" type="number" step="1" placeholder="10 = alta (Android)" />
+        </div>
+        <div class="vc-row osd-inline">
+          <label for="osd-delayed">delayed_option</label>
+          <select id="osd-delayed">
+            <option value="immediate">Inmediato</option>
+            <option value="timezone">Por timezone del usuario</option>
+            <option value="last-active">Por ultima actividad (Intelligent)</option>
+          </select>
+          <label for="osd-tod">delivery_time_of_day</label>
+          <input id="osd-tod" type="text" placeholder="ej: 9:00AM" />
+        </div>
+        <div class="vc-row osd-inline">
+          <label for="osd-send-after">send_after</label>
+          <input id="osd-send-after" type="text" placeholder="ej: 2026-06-20 10:00:00 GMT-0300" />
+          <span class="vc-hint">Programa el envio. Throttling tiene prioridad sobre timezone/intelligent delivery.</span>
+        </div>
+
+        <div class="modal-actions" style="margin-top:14px;">
+          <button id="osd-preview-btn" class="btn primary" type="button">Previsualizar (curl + detalle)</button>
+        </div>
+      </div>
+
+      <div id="osd-log" class="dt-log"></div>
+    </section>
+
+    <!-- Preview modal: muestra el curl + body exacto antes de confirmar el envio -->
+    <div id="osd-preview-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-osd-close="1"></div>
+      <div class="modal-dialog modal-wide" role="dialog" aria-labelledby="osd-preview-title">
+        <header class="modal-head">
+          <h3 id="osd-preview-title">Confirmar envio</h3>
+          <button class="btn" type="button" data-osd-close="1">Cerrar</button>
+        </header>
+        <div class="modal-body">
+          <div class="osd-preview-target">
+            <div><strong>Destino:</strong> <span id="osd-preview-target-text"></span></div>
+            <div class="vc-hint"><strong>POST</strong> <span class="mono" id="osd-preview-url"></span></div>
+            <div class="vc-hint" id="osd-preview-throttle"></div>
+          </div>
+
+          <h4 class="os-section-title">Detalle del request (body JSON)</h4>
+          <div class="osd-codeblock-wrap">
+            <button class="btn osd-copy" type="button" data-copy="body">Copiar JSON</button>
+            <pre class="osd-codeblock"><code id="osd-preview-body"></code></pre>
+          </div>
+
+          <h4 class="os-section-title">curl</h4>
+          <div class="vc-hint">La <code>REST API key</code> va enmascarada por seguridad: reemplazala por la real para correrlo desde una terminal.</div>
+          <div class="osd-codeblock-wrap">
+            <button class="btn osd-copy" type="button" data-copy="curl">Copiar curl</button>
+            <pre class="osd-codeblock"><code id="osd-preview-curl"></code></pre>
+          </div>
+
+          <div id="osd-preview-status" class="status" aria-live="polite"></div>
+        </div>
+        <footer class="modal-foot">
+          <div class="vc-hint osd-bulk-hint hidden" id="osd-bulk-hint">Tip: el envío corre en segundo plano. Podés cerrar esta ventana y seguir el progreso (msgs enviados, bloques OK/fallidos) en el banner de arriba. Se guarda checkpoint por bloque: es pausable y reanudable.</div>
+          <div class="modal-actions">
+            <button class="btn" type="button" data-osd-close="1">Cancelar</button>
+            <button id="osd-cancel-bulk" class="btn hidden" type="button">Pausar</button>
+            <button id="osd-confirm-send" class="btn primary" type="button">Confirmar y enviar</button>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <section id="view-graphUsers" class="view">
+      <header class="view-header">
+        <span class="env-badge env-badge-corner" id="gu-env-badge"></span>
+        <h2>Usuarios B2C (Microsoft Graph)</h2>
+        <p>client_credentials contra Azure AD del tenant B2C, luego <code>GET /v1.0/users</code> con <code>$select</code> incluyendo <code>identities</code> y las <code>extension_*</code> properties. Buscas por email (matching de <code>identities[].issuerAssignedId</code>), abris el detalle y editas <strong>solo</strong> los campos que toques — el PATCH manda exclusivamente los modificados.</p>
+      </header>
+
+      <div class="gu-toolbar">
+        <label class="gu-toolbar-field gu-toolbar-search">
+          <span>Buscar</span>
+          <input id="gu-search" type="text" placeholder="email, nombre, documento o id..." />
+        </label>
+        <button id="gu-load" class="btn primary" type="button">Cargar usuarios</button>
+        <button id="gu-clear" class="btn" type="button">Limpiar</button>
+        <span id="gu-count" class="badge">0</span>
+        <span id="gu-spinner" class="os-spinner hidden" aria-hidden="true"></span>
+      </div>
+
+      <small id="gu-env-summary" class="gu-env-summary"></small>
+
+      <div id="gu-status" class="status" aria-live="polite"></div>
+
+      <div class="onesignal-table-wrap gu-table-wrap">
+        <table class="onesignal-table gu-table">
+          <thead>
+            <tr>
+              <th>displayName</th>
+              <th>email (issuerAssignedId)</th>
+              <th>userPrincipalName</th>
+              <th>Documento</th>
+              <th>TenantId</th>
+              <th>userType</th>
+              <th>id</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="gu-tbody">
+            <tr class="os-empty"><td colspan="8">Apreta "Cargar usuarios" para traer el directorio del ambiente seleccionado.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="gu-log" class="dt-log"></div>
+    </section>
+
+    <div id="gu-edit-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-gu-close="1"></div>
+      <div class="modal-dialog gu-edit-dialog" role="dialog" aria-labelledby="gu-edit-title">
+        <header class="modal-head">
+          <h3 id="gu-edit-title">Editar usuario</h3>
+          <button class="btn" type="button" data-gu-close="1">Cerrar</button>
+        </header>
+        <div class="modal-body">
+          <div class="gu-edit-meta">
+            <div class="gu-edit-meta-row"><strong>id</strong><span class="mono" id="gu-edit-id"></span></div>
+            <div class="gu-edit-meta-row"><strong>displayName</strong><span id="gu-edit-display"></span></div>
+            <div class="gu-edit-meta-row"><strong>identities</strong><span class="mono" id="gu-edit-identities"></span></div>
+          </div>
+
+          <div class="gu-edit-grid" id="gu-edit-fields">
+            <!-- Inputs renderizados por graphUsersView.js -->
+          </div>
+
+          <div id="gu-edit-changed" class="gu-edit-changed"></div>
+
+          <div id="gu-edit-status" class="status" aria-live="polite"></div>
+        </div>
+        <footer class="modal-foot">
+          <div class="modal-actions">
+            <button class="btn" type="button" data-gu-close="1">Cancelar</button>
+            <button id="gu-edit-reset" class="btn" type="button" title="Descartar los cambios sin cerrar el modal">Descartar cambios</button>
+            <button id="gu-edit-save" class="btn primary" type="button" disabled>Guardar cambios</button>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <section id="view-ducsaTools" class="view">
+      <header class="view-header">
+        <h2>DUCSA Tools</h2>
+        <p>Port de las funcionalidades del proyecto <code>SendQrRequest</code>. Cada operacion tiene confirmacion previa con resumen antes de ejecutar.</p>
+      </header>
+      <div id="ducsa-tools-list"></div>
+    </section>
+
+    <section id="view-plexoCards" class="view">
+      <header class="view-header">
+        <span class="env-badge env-badge-corner" id="plx-env-badge"></span>
+        <h2>Listar y eliminar tarjetas Plexo</h2>
+        <p>Port del endpoint <code>POST api/MediosPago/Eliminar/Tarjeta/Plexo</code> del backoffice. Lista los instrumentos (tarjetas) de un cliente en Plexo y permite eliminarlos uno a uno. Cada request se firma con la clave privada del certificado instalado en el store de Windows (<code>LocalMachine\My</code>); la firma se hace via PowerShell, la clave nunca sale del store.</p>
+      </header>
+
+      <div id="plx-admin-gate" class="plx-admin-gate hidden">
+        <div class="plx-admin-gate-icon">&#x26A0;</div>
+        <div class="plx-admin-gate-body">
+          <strong>No estas en modo administrador.</strong>
+          <p>Para obtener el certificado y firmar contra Plexo, la app debe ejecutarse como administrador.</p>
+        </div>
+        <button id="plx-admin-relaunch" class="btn primary" type="button">Entrar como administrador</button>
+      </div>
+
+      <div class="gu-toolbar">
+        <label class="gu-toolbar-field">
+          <span>Tipo doc</span>
+          <select id="plx-doctype">
+            <option value="0" selected>CI (0)</option>
+            <option value="1">Otro (1)</option>
+          </select>
+        </label>
+        <label class="gu-toolbar-field gu-toolbar-search">
+          <span>Documento</span>
+          <input id="plx-document" type="text" placeholder="numero de documento (sin puntos ni guion)" />
+        </label>
+        <button id="plx-load" class="btn primary" type="button">Listar tarjetas</button>
+        <button id="plx-clear" class="btn" type="button">Limpiar</button>
+        <span id="plx-count" class="badge">0</span>
+        <span id="plx-spinner" class="os-spinner hidden" aria-hidden="true"></span>
+      </div>
+
+      <small id="plx-env-summary" class="gu-env-summary"></small>
+
+      <div id="plx-status" class="status" aria-live="polite"></div>
+
+      <div class="onesignal-table-wrap gu-table-wrap">
+        <table class="onesignal-table gu-table">
+          <thead>
+            <tr>
+              <th>Marca</th>
+              <th>Issuer</th>
+              <th>Nombre / Mask</th>
+              <th>Correo</th>
+              <th>Tipo medio pago</th>
+              <th>Habilitado</th>
+              <th>Vence</th>
+              <th>Banco</th>
+              <th>InstrumentToken</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="plx-tbody">
+            <tr class="os-empty"><td colspan="10">Ingresa un documento y apreta "Listar tarjetas".</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="plx-log" class="dt-log"></div>
+    </section>
+
+    <div id="plx-del-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-plx-close="1"></div>
+      <div class="modal-dialog" role="dialog" aria-labelledby="plx-del-title">
+        <header class="modal-head">
+          <h3 id="plx-del-title">Eliminar tarjeta Plexo</h3>
+          <button class="btn" type="button" data-plx-close="1">Cerrar</button>
+        </header>
+        <div class="modal-body">
+          <p class="modal-hint">Esta accion elimina el instrumento en Plexo y <strong>no se puede deshacer</strong>. Confirma los datos:</p>
+          <div class="b2b-meta">
+            <div class="b2b-meta-row"><strong>Documento:</strong> <span id="plx-del-doc" class="mono"></span></div>
+            <div class="b2b-meta-row"><strong>Marca:</strong> <span id="plx-del-brand"></span></div>
+            <div class="b2b-meta-row"><strong>Nombre:</strong> <span id="plx-del-name"></span></div>
+            <div class="b2b-meta-row"><strong>InstrumentToken:</strong> <span id="plx-del-token" class="mono"></span></div>
+          </div>
+          <div id="plx-del-status" class="status" aria-live="polite"></div>
+        </div>
+        <footer class="modal-foot">
+          <div class="modal-actions">
+            <button class="btn" type="button" data-plx-close="1">Cancelar</button>
+            <button id="plx-del-confirm" class="btn primary" type="button">Eliminar tarjeta</button>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <div id="plx-info-modal" class="modal modal-top hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-plx-info-close="1"></div>
+      <div class="modal-dialog" role="dialog" aria-labelledby="plx-info-title">
+        <header class="modal-head">
+          <h3 id="plx-info-title">Información del instrumento</h3>
+          <button class="btn" type="button" data-plx-info-close="1">Cerrar</button>
+        </header>
+        <div class="modal-body">
+          <p class="modal-hint">Todos los datos del instrumento devuelto por Plexo, más los campos calculados.</p>
+          <div id="plx-info-body" class="plx-info-grid"></div>
+        </div>
+        <footer class="modal-foot">
+          <div class="modal-actions">
+            <button class="btn" type="button" data-plx-info-close="1">Cerrar</button>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <section id="view-plexoRefund" class="view">
+      <header class="view-header">
+        <span class="env-badge env-badge-corner" id="prf-env-badge"></span>
+        <h2>Devolucion (refund) Plexo</h2>
+        <p>Simula la devolucion de dinero de un pago Plexo. Port del flujo <code>DevolucionDeDineroHandler &rarr; RefundAsync</code> del backoffice (<code>POST {baseUrl}/Operation/Refund</code>). Ingresa el <strong>OrderId</strong>: se busca en la base APP el monto (<code>ImporteServicio</code> / <code>Importe</code>) y el <strong>MetaReference</strong> (<code>CodigoAutorizacionPasarela</code>), y se envia la devolucion firmada con el certificado del store de Windows.</p>
+      </header>
+
+      <div id="prf-admin-gate" class="plx-admin-gate hidden">
+        <div class="plx-admin-gate-icon">&#x26A0;</div>
+        <div class="plx-admin-gate-body">
+          <strong>No estas en modo administrador.</strong>
+          <p>Para obtener el certificado y firmar contra Plexo, la app debe ejecutarse como administrador.</p>
+        </div>
+        <button id="prf-admin-relaunch" class="btn primary" type="button">Entrar como administrador</button>
+      </div>
+
+      <div class="gu-toolbar">
+        <label class="gu-toolbar-field gu-toolbar-search">
+          <span>OrderId</span>
+          <input id="prf-orderid" type="text" inputmode="numeric" placeholder="numero de orden (OrdenId)" />
+        </label>
+        <button id="prf-lookup" class="btn" type="button">Buscar datos</button>
+        <span id="prf-spinner" class="os-spinner hidden" aria-hidden="true"></span>
+      </div>
+
+      <small id="prf-env-summary" class="gu-env-summary"></small>
+
+      <div id="prf-status" class="status" aria-live="polite"></div>
+
+      <div class="b2b-meta prf-form">
+        <label class="gu-toolbar-field">
+          <span>Monto a devolver (Amount)</span>
+          <input id="prf-amount" type="text" inputmode="decimal" placeholder="0.00" />
+        </label>
+        <label class="gu-toolbar-field">
+          <span>MetaReference (codigo de autorizacion Plexo)</span>
+          <input id="prf-meta" type="text" placeholder="CodigoAutorizacionPasarela" />
+        </label>
+        <div id="prf-origin" class="prf-origin"></div>
+        <button id="prf-refund" class="btn primary" type="button" disabled>Simular devolucion</button>
+      </div>
+
+      <div id="prf-result" class="prf-result hidden"></div>
+
+      <div id="prf-log" class="dt-log"></div>
+    </section>
+
+    <section id="view-factura" class="view">
+      <header class="view-header">
+        <h2>Generacion de Facturas</h2>
+        <p>Port 1:1 del proyecto de consola <code>DistMayoristaGlp</code>. Busca un pedido por <strong>Direccion de entrega</strong>, elegilo de la grilla y toca <strong>Generar script</strong>: se abre un asistente que te pide el numero de factura y el tipo de redondeo, y te devuelve el SQL formateado (UPDATES de <code>ItemPedidos</code> + INSERT en <code>[dbo].[Facturas]</code>). <strong>No modifica la base</strong>: solo genera los scripts para que los corras vos. Connection string y prefijo se editan en Configuracion &rarr; pestaña "Factura".</p>
+      </header>
+
+      <div class="gu-toolbar">
+        <label class="gu-toolbar-field gu-toolbar-search">
+          <span>Direccion de entrega</span>
+          <input id="fac-search" type="text" placeholder="ej: daniel" />
+        </label>
+        <label class="gu-toolbar-field">
+          <span>Limite</span>
+          <select id="fac-top">
+            <option value="10">10</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+        </label>
+        <button id="fac-search-btn" class="btn primary" type="button">Buscar</button>
+        <button id="fac-search-clear" class="btn" type="button">Limpiar</button>
+        <span id="fac-count" class="badge">0</span>
+        <span id="fac-spinner" class="os-spinner hidden" aria-hidden="true"></span>
+      </div>
+
+      <small id="fac-config-summary" class="gu-env-summary"></small>
+
+      <div id="fac-status" class="status" aria-live="polite"></div>
+
+      <div class="onesignal-table-wrap fac-grid-wrap">
+        <table class="onesignal-table fac-grid">
+          <thead>
+            <tr>
+              <th class="fac-num">Id</th>
+              <th>Direccion de entrega</th>
+              <th>Estado</th>
+              <th>Fecha finalizado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="fac-grid-body">
+            <tr class="os-empty"><td colspan="5">Busca por direccion de entrega para listar pedidos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="fac-log" class="dt-log"></div>
+
+      <div class="parse-card fac-history-card">
+        <div class="parse-card-header">
+          <h3>Historial de scripts generados</h3>
+          <div class="actions">
+            <span id="fac-hist-count" class="badge">0</span>
+            <button id="fac-hist-clear" class="btn" type="button">Limpiar historial</button>
+          </div>
+        </div>
+        <p class="vc-hint">Registro local de scripts ya generados en esta maquina (el tool nunca ejecuta nada contra la base: esto es solo trazabilidad de lo que ya se genero).</p>
+        <div class="onesignal-table-wrap">
+          <table class="onesignal-table fac-hist-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th class="fac-num">Pedido</th>
+                <th>Cliente / Direccion</th>
+                <th>Numero</th>
+                <th class="fac-num">Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="fac-hist-body">
+              <tr class="os-empty"><td colspan="6">Todavia no generaste ningun script en esta maquina.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-reportes" class="view">
+      <header class="view-header">
+        <h2>Reportes recurrentes</h2>
+        <p>Reportes ad-hoc contra bases de DUCSA, ejecutados bajo demanda y exportables a Excel. El ambiente (Testing/Produccion) es el selector global de la app (<code>Ctrl+E</code>). Los connection string por ambiente se editan en Configuracion &rarr; pestaña "Reportes".</p>
+      </header>
+      <div class="projects-layout">
+        <div id="rp-list" class="cards-grid"></div>
+        <aside id="rp-detail" class="project-detail">
+          <div class="placeholder">Selecciona un reporte para ejecutarlo.</div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Asistente (wizard) de generacion de factura: nro de factura -> redondeo -> scripts -->
+    <div id="fac-wizard-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-fac-close="1"></div>
+      <div class="modal-dialog modal-wide" role="dialog" aria-labelledby="fac-wz-title">
+        <header class="modal-head">
+          <h3 id="fac-wz-title">Generar factura</h3>
+          <button class="btn" type="button" data-fac-close="1">Cerrar</button>
+        </header>
+
+        <div class="modal-toolbar">
+          <div class="fac-steps">
+            <div class="fac-step" data-step="1"><span class="fac-step-dot">1</span><span>Nro de factura</span></div>
+            <div class="fac-step" data-step="2"><span class="fac-step-dot">2</span><span>Redondeo</span></div>
+            <div class="fac-step" data-step="3"><span class="fac-step-dot">3</span><span>Scripts SQL</span></div>
+          </div>
+          <div class="fac-progress"><div id="fac-progress-fill" class="fac-progress-fill"></div></div>
+        </div>
+
+        <div class="modal-body">
+          <div id="fac-wz-pedido" class="b2b-meta fac-wz-pedido"></div>
+
+          <!-- Paso 1: numero de factura -->
+          <div class="fac-wz-step" data-step="1">
+            <div class="vc-row">
+              <label for="fac-wz-numero">Numero de factura</label>
+              <div class="fac-numero-row">
+                <span id="fac-wz-prefijo" class="fac-prefijo mono"></span>
+                <input id="fac-wz-numero" type="text" placeholder="numero" />
+              </div>
+              <div class="fac-numero-preview">
+                <span class="fac-preview-label">Numero completo:</span>
+                <span id="fac-wz-numero-full" class="mono"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 2: redondeo -->
+          <div class="fac-wz-step hidden" data-step="2">
+            <div class="fac-redondeo-head">
+              <strong>Seleccione el tipo de redondeo</strong>
+              <span class="vc-hint">totalRedondeo actual: <span id="fac-wz-red-actual" class="mono"></span></span>
+            </div>
+            <div id="fac-wz-red-opts" class="fac-redondeo-opts"></div>
+          </div>
+
+          <!-- Paso 3: scripts -->
+          <div class="fac-wz-step hidden" data-step="3">
+            <details class="fac-calc-details">
+              <summary>Ver calculos por item</summary>
+              <div class="onesignal-table-wrap fac-calc-wrap">
+                <table class="onesignal-table fac-calc-table">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th class="fac-num">Cant.</th>
+                      <th class="fac-num">Importe Auxiliar</th>
+                      <th class="fac-num">Bonificacion</th>
+                      <th class="fac-num">Importe Neto</th>
+                      <th class="fac-num">IVA</th>
+                      <th class="fac-num">Percepcion IVA</th>
+                      <th class="fac-num">Percepcion URSEA</th>
+                      <th class="fac-num">Redondeo</th>
+                      <th class="fac-num">Total</th>
+                      <th class="fac-num">Total sin redondeo</th>
+                    </tr>
+                  </thead>
+                  <tbody id="fac-calc-body"></tbody>
+                  <tfoot id="fac-calc-foot"></tfoot>
+                </table>
+              </div>
+            </details>
+
+            <div class="fac-output">
+              <div class="parse-card">
+                <div class="parse-card-header">
+                  <h3>UPDATE ItemPedidos</h3>
+                  <button id="fac-copy-updates" class="btn" type="button">Copiar</button>
+                </div>
+                <pre id="fac-updates" class="json-block"></pre>
+              </div>
+
+              <div class="parse-card">
+                <div class="parse-card-header">
+                  <h3>INSERT Factura</h3>
+                  <button id="fac-copy-insert" class="btn" type="button">Copiar</button>
+                </div>
+                <pre id="fac-insert" class="json-block"></pre>
+              </div>
+
+              <div id="fac-estado-card" class="parse-card hidden">
+                <div class="parse-card-header">
+                  <h3>UPDATE Estado Pedido</h3>
+                  <button id="fac-copy-estado" class="btn" type="button">Copiar</button>
+                </div>
+                <pre id="fac-estado" class="json-block"></pre>
+              </div>
+            </div>
+          </div>
+
+          <div id="fac-wz-status" class="status" aria-live="polite"></div>
+        </div>
+
+        <footer class="modal-foot">
+          <div class="modal-actions">
+            <button id="fac-wz-back" class="btn" type="button">Atras</button>
+            <button id="fac-wz-next" class="btn primary" type="button">Siguiente</button>
+            <button id="fac-wz-save-sql" class="btn hidden" type="button">Guardar .sql</button>
+            <button id="fac-wz-copy-all" class="btn primary hidden" type="button">Copiar todo el SQL</button>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <section id="view-outlook" class="view">
+      <header class="view-header">
+        <h2>Codigos TuPase (Outlook)</h2>
+        <p>Conecta tu cuenta de Outlook con <strong>Device Code Flow</strong> (te logueas en tu navegador, la app nunca ve tu contrasena) y busca los correos de TuPase recibidos desde una fecha, extrayendo los codigos de cada mensaje. Todo el trafico corre en el proceso principal via Microsoft Graph. Config (clientId de Azure, remitente, patron de codigo) en Configuracion &rarr; tab "Outlook".</p>
+      </header>
+
+      <div id="ol-config-gate" class="plx-admin-gate hidden">
+        <div class="plx-admin-gate-icon">&#x1F517;</div>
+        <div class="plx-admin-gate-body">
+          <strong>Outlook no esta configurado.</strong>
+          <p>Completa el <code>clientId</code> de la app de Azure (public client con <em>Allow public client flows</em> y permiso delegado <code>Mail.Read</code>) y el <code>remitente</code> de TuPase en Configuracion &rarr; tab "Outlook".</p>
+        </div>
+        <button id="ol-open-settings" class="btn primary" type="button">Abrir Configuracion</button>
+      </div>
+
+      <div id="ol-main" class="hidden">
+        <div class="gu-toolbar">
+          <div class="ol-account">
+            <span id="ol-conn-dot" class="ol-conn-dot" aria-hidden="true"></span>
+            <span id="ol-account-text">Sin conectar</span>
+          </div>
+          <button id="ol-connect" class="btn primary" type="button">Conectar Outlook</button>
+          <button id="ol-signout" class="btn" type="button" hidden>Desconectar</button>
+        </div>
+
+        <!-- Panel de device code: aparece durante el login -->
+        <div id="ol-devicecode" class="ol-devicecode hidden">
+          <div class="ol-dc-step">
+            <span class="ol-dc-num">1</span>
+            <span>Abri <a href="#" id="ol-dc-link" data-ol-openlink="1">microsoft.com/devicelogin</a></span>
+          </div>
+          <div class="ol-dc-step">
+            <span class="ol-dc-num">2</span>
+            <span>Ingresa este codigo:</span>
+            <code id="ol-dc-code" class="ol-dc-code">------</code>
+            <button id="ol-dc-copy" class="btn mini" type="button">Copiar</button>
+          </div>
+          <div class="ol-dc-hint">Esperando a que completes el login en el navegador...</div>
+        </div>
+
+        <div class="gu-toolbar ol-search-toolbar">
+          <label class="gu-toolbar-field">
+            <span>Desde (fecha)</span>
+            <input id="ol-since" type="date" />
+          </label>
+          <label class="gu-toolbar-field gu-toolbar-search">
+            <span>Remitente TuPase</span>
+            <input id="ol-sender" type="text" placeholder="noreply@tupase.com.uy" />
+          </label>
+          <button id="ol-search" class="btn primary" type="button" disabled>Buscar codigos</button>
+          <span id="ol-count" class="badge">0</span>
+          <span id="ol-spinner" class="os-spinner hidden" aria-hidden="true"></span>
+        </div>
+
+        <small id="ol-env-summary" class="gu-env-summary"></small>
+        <div id="ol-status" class="status" aria-live="polite"></div>
+
+        <div class="onesignal-table-wrap gu-table-wrap">
+          <table class="onesignal-table gu-table">
+            <thead>
+              <tr>
+                <th>Codigo</th>
+                <th>Fecha del correo</th>
+                <th>Asunto</th>
+                <th>Remitente</th>
+                <th>Referencia</th>
+              </tr>
+            </thead>
+            <tbody id="ol-tbody">
+              <tr class="os-empty"><td colspan="5">Conecta la cuenta, elegi una fecha y apreta "Buscar codigos".</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="ol-log" class="dt-log"></div>
+      </div>
+    </section>
+
+    <section id="view-jira" class="view">
+      <header class="view-header">
+        <h2>Mis tareas (Jira)</h2>
+        <p>Tareas de Jira asignadas (JQL configurable). Las llamadas a la REST API v3 se hacen desde el proceso principal con Basic auth (<code>email:apiToken</code>); el token es <strong>personal de cada uno</strong> (no viene incluido en la app) y se carga en Configuracion &rarr; tab "Jira". Nunca sale del proceso Node.</p>
+      </header>
+
+      <div id="jira-config-gate" class="plx-admin-gate hidden">
+        <div class="plx-admin-gate-icon">&#x1F517;</div>
+        <div class="plx-admin-gate-body">
+          <strong>Jira no esta configurado.</strong>
+          <p>Completa <code>baseUrl</code>, <code>email</code> y un <code>API token</code> en Configuracion &rarr; tab "Jira". El token se genera en <em>id.atlassian.com &rarr; Security &rarr; API tokens</em>.</p>
+        </div>
+        <button id="jira-open-settings" class="btn primary" type="button">Abrir Configuracion</button>
+      </div>
+
+      <div id="jira-main" class="hidden">
+        <div class="jira-controlbar">
+          <div class="jira-toolbar">
+            <button id="jira-refresh" class="btn primary jira-refresh-btn" type="button" title="Refrescar">
+              <span class="jira-refresh-icon" aria-hidden="true">&#x27F3;</span> Refrescar
+            </button>
+            <span id="jira-count" class="badge">0</span>
+            <span id="jira-spinner" class="os-spinner hidden" aria-hidden="true"></span>
+
+            <div class="os-mode-tabs jira-view-tabs" role="tablist" aria-label="Modo de vista">
+              <button id="jira-view-list" class="os-mode-tab active" type="button" role="tab" aria-selected="true">&#9776; Lista</button>
+              <button id="jira-view-kanban" class="os-mode-tab" type="button" role="tab" aria-selected="false">&#9638; Kanban</button>
+            </div>
+
+            <label class="jira-notify-toggle" title="Avisa con una notificacion de Windows cuando aparece una tarea nueva asignada (revisa cada 3 min en segundo plano)">
+              <span class="jira-switch">
+                <input id="jira-notify-toggle" type="checkbox" />
+                <span class="jira-switch-track" aria-hidden="true"></span>
+              </span>
+              <span>&#x1F514; Avisarme de tareas nuevas</span>
+            </label>
+          </div>
+
+          <div class="jira-filters">
+            <label class="gu-toolbar-field">
+              <span>Vista</span>
+              <select id="jira-f-category">
+                <option value="active" selected>Por hacer + En curso</option>
+                <option value="">Todas</option>
+                <option value="new">Por hacer</option>
+                <option value="indeterminate">En curso</option>
+                <option value="done">Finalizadas</option>
+              </select>
+            </label>
+            <button id="jira-views-manage" class="btn" type="button" title="Gestionar vistas personalizadas por estado (ej: Pending Test, Deployado TST)">&#x2699; Vistas</button>
+            <label class="gu-toolbar-field">
+              <span>Estado</span>
+              <select id="jira-f-status"><option value="">Todos</option></select>
+            </label>
+            <label class="gu-toolbar-field">
+              <span>Proyecto</span>
+              <select id="jira-f-project"><option value="">Todos</option></select>
+            </label>
+            <label class="gu-toolbar-field">
+              <span>Prioridad</span>
+              <select id="jira-f-priority"><option value="">Todas</option></select>
+            </label>
+            <label class="gu-toolbar-field gu-toolbar-search">
+              <span>Texto</span>
+              <input id="jira-f-text" type="text" placeholder="key, titulo, descripcion..." />
+            </label>
+            <button id="jira-f-clear" class="btn" type="button">Limpiar filtros</button>
+          </div>
+
+          <details class="jira-jql-details">
+            <summary>&#x1F527; JQL avanzado</summary>
+            <label class="gu-toolbar-field jira-jql-field">
+              <span>JQL</span>
+              <input id="jira-jql" type="text" placeholder="assignee = currentUser() AND statusCategory in (2, 4) ORDER BY priority DESC, created ASC" />
+            </label>
+          </details>
+        </div>
+
+        <small id="jira-env-summary" class="gu-env-summary"></small>
+        <div id="jira-status" class="status" aria-live="polite"></div>
+
+        <div id="jira-list" class="jira-list"></div>
+        <div id="jira-kanban" class="jira-kanban hidden"></div>
+
+        <div id="jira-log" class="dt-log"></div>
+      </div>
+    </section>
+
+    <div id="jira-detail-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-jira-close="1"></div>
+      <div class="modal-dialog jira-detail-dialog" role="dialog" aria-labelledby="jira-detail-title">
+        <header class="modal-head">
+          <h3 id="jira-detail-title">Issue</h3>
+          <button class="btn" type="button" data-jira-close="1">Cerrar</button>
+        </header>
+        <div class="modal-body">
+          <div id="jira-detail-loading" class="dd-loading">
+            <span class="os-spinner"></span><span>Cargando issue...</span>
+          </div>
+
+          <div id="jira-detail-body" class="hidden">
+            <div class="jira-detail-head">
+              <div>
+                <span id="jira-d-key" class="jira-key"></span>
+                <span id="jira-d-status" class="jira-pill"></span>
+                <span id="jira-d-type" class="badge"></span>
+              </div>
+              <div class="jira-detail-head-actions">
+                <button id="jira-d-copy-prompt" class="btn" type="button" title="Copiar prompt para IA (incluye titulo, descripcion y comentarios)">&#x1F4CB; Copiar prompt</button>
+                <button id="jira-d-open" class="btn" type="button" title="Abrir en Jira">Abrir en Jira &#x2197;</button>
+                <button id="jira-d-delete" class="btn danger hidden" type="button" title="Eliminar esta issue (solo si la creaste vos)">&#x1F5D1; Eliminar</button>
+              </div>
+            </div>
+
+            <h4 id="jira-d-summary" class="jira-detail-summary"></h4>
+
+            <div class="b2b-meta jira-detail-meta">
+              <div class="b2b-meta-row"><strong>Proyecto:</strong> <span id="jira-d-project"></span></div>
+              <div class="b2b-meta-row"><strong>Prioridad:</strong> <span id="jira-d-priority"></span></div>
+              <div class="b2b-meta-row"><strong>Reporter:</strong> <span id="jira-d-reporter"></span></div>
+              <div class="b2b-meta-row"><strong>Actualizada:</strong> <span id="jira-d-updated"></span></div>
+            </div>
+
+            <div class="jira-detail-actions">
+              <div class="jira-action-block">
+                <label for="jira-d-transition"><strong>Cambiar estado</strong> <span class="vc-hint">(transition)</span></label>
+                <div class="jira-action-row">
+                  <select id="jira-d-transition"><option value="">Cargando transiciones...</option></select>
+                  <button id="jira-d-transition-apply" class="btn primary" type="button" disabled>Aplicar</button>
+                </div>
+              </div>
+
+              <div class="jira-action-block">
+                <label for="jira-d-assignee-search"><strong>Reasignar</strong> <span class="vc-hint">(accountId)</span></label>
+
+                <div class="jira-current-assignee">
+                  <span id="jira-d-assignee-avatar" class="jira-card-avatar" aria-hidden="true"></span>
+                  <span>Asignada a: <strong id="jira-d-assignee"></strong></span>
+                </div>
+
+                <div class="jira-assignee-search-wrap">
+                  <input id="jira-d-assignee-search" type="text" placeholder="Buscar usuario (nombre/email)..." />
+                  <div id="jira-d-assignee-results" class="jira-user-results hidden"></div>
+                </div>
+
+                <div class="jira-action-row jira-assignee-quick-actions">
+                  <button id="jira-d-assignee-unassign" class="btn" type="button" title="Dejar sin asignar">Sin asignar</button>
+                  <button id="jira-d-assignee-reporter" class="btn jira-reporter-btn" type="button" title="Reasignar directo a quien reporto la issue">&#x21A9; Asignar al reporter</button>
+                </div>
+              </div>
+
+              <div class="jira-action-block jira-action-block-wide">
+                <label for="jira-d-worklog-time"><strong>Worklog rapido</strong> <span class="vc-hint">(loguear tiempo sin salir de la app)</span></label>
+                <div class="jira-action-row">
+                  <input id="jira-d-worklog-time" type="text" placeholder="Tiempo trabajado, ej: 1h 30m" />
+                  <button id="jira-d-worklog-apply" class="btn primary" type="button">Registrar</button>
+                </div>
+                <input id="jira-d-worklog-comment" type="text" placeholder="Comentario (opcional)" />
+              </div>
+            </div>
+
+            <div class="parse-card jira-desc-card">
+              <div class="parse-card-header"><h3>Descripcion</h3></div>
+              <pre id="jira-d-description" class="json-block jira-desc"></pre>
+            </div>
+
+            <div class="parse-card">
+              <div class="parse-card-header">
+                <h3>Comentarios</h3>
+                <span id="jira-d-comments-count" class="badge">0</span>
+              </div>
+              <div id="jira-d-comments" class="jira-comments"></div>
+              <div class="jira-comment-compose">
+                <div class="jira-mention-wrap">
+                  <div id="jira-d-comment-highlight" class="jira-comment-highlight" aria-hidden="true"></div>
+                  <textarea id="jira-d-comment-text" rows="2" placeholder="Escribi un comentario... (@ para mencionar, Ctrl+Enter para enviar)"></textarea>
+                  <div id="jira-d-mention-results" class="jira-user-results jira-mention-results hidden"></div>
+                </div>
+                <button id="jira-d-comment-add" class="btn primary" type="button">Comentar</button>
+              </div>
+            </div>
+
+            <div id="jira-detail-status" class="status" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="jira-views-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-jira-views-close="1"></div>
+      <div class="modal-dialog jira-views-dialog" role="dialog" aria-labelledby="jira-views-title">
+        <header class="modal-head">
+          <h3 id="jira-views-title">Vistas personalizadas</h3>
+          <button class="btn" type="button" data-jira-views-close="1">Cerrar</button>
+        </header>
+        <div class="modal-body">
+          <p class="vc-hint">Ademas de "Por hacer / En curso / Finalizadas" podes definir vistas por el nombre real del estado en Jira (ej. "Pending Test", "Deployado TST"). Se guardan en este equipo.</p>
+          <div id="jira-views-list" class="jira-views-list"></div>
+          <div class="jira-views-form">
+            <label class="gu-toolbar-field">
+              <span>Nombre</span>
+              <input id="jira-views-name" type="text" placeholder="Ej: Pending Test" />
+            </label>
+            <label class="gu-toolbar-field jira-views-statuses-field">
+              <span>Estados (separados por coma)</span>
+              <input id="jira-views-statuses" type="text" placeholder="Ej: Deployado TST, Pending Test" />
+            </label>
+            <button id="jira-views-add" class="btn primary" type="button">Agregar vista</button>
+          </div>
+          <div id="jira-views-status" class="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <section id="view-jsonTool" class="view">
+      <header class="view-header">
+        <h2>JSON &middot; Formato y validacion</h2>
+        <p>Pega un JSON para formatearlo (indentado), minificarlo o validarlo. Todo es local: nada sale de la app.</p>
+      </header>
+      <div class="qr-input-card">
+        <label for="jsont-input">JSON</label>
+        <textarea id="jsont-input" rows="10" spellcheck="false" placeholder='{ "hello": "world" }'></textarea>
+        <div class="actions">
+          <button id="jsont-format" class="btn primary" type="button">Formatear</button>
+          <button id="jsont-minify" class="btn" type="button">Minificar</button>
+          <button id="jsont-validate" class="btn" type="button">Validar</button>
+          <label class="inline-field">Indentacion
+            <select id="jsont-indent">
+              <option value="2" selected>2 espacios</option>
+              <option value="4">4 espacios</option>
+              <option value="tab">Tab</option>
+            </select>
+          </label>
+          <button id="jsont-clear" class="btn" type="button">Limpiar</button>
+          <button id="jsont-copy" class="btn" type="button" disabled>Copiar resultado</button>
+        </div>
+        <div id="jsont-status" class="status" aria-live="polite"></div>
+      </div>
+      <div class="parse-card">
+        <div class="parse-card-header">
+          <h3>Resultado</h3>
+          <span id="jsont-size" class="badge"></span>
+        </div>
+        <div id="jsont-search-bar" class="json-search" hidden>
+          <input id="jsont-search" type="search" spellcheck="false" placeholder="Buscar propiedad o valor..." />
+          <button id="jsont-search-prev" class="btn" type="button" title="Anterior (Shift+Enter)">&uarr;</button>
+          <button id="jsont-search-next" class="btn" type="button" title="Siguiente (Enter)">&darr;</button>
+          <span id="jsont-search-count" class="badge"></span>
+        </div>
+        <pre id="jsont-output" class="json-block"></pre>
+      </div>
+    </section>
+
+    <section id="view-jwtDecode" class="view">
+      <header class="view-header">
+        <h2>Decode JWT</h2>
+        <p>Pega un JWT y la app decodifica el header y el payload (base64url). <strong>No verifica la firma</strong>, solo decodifica. Todo es local.</p>
+      </header>
+      <div class="qr-input-card">
+        <label for="jwt-input">JWT</label>
+        <textarea id="jwt-input" rows="5" spellcheck="false" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0In0.signature"></textarea>
+        <div class="actions">
+          <button id="jwt-decode" class="btn primary" type="button">Decodificar</button>
+          <button id="jwt-clear" class="btn" type="button">Limpiar</button>
+          <button id="jwt-copy" class="btn" type="button" disabled>Copiar payload</button>
+        </div>
+        <div id="jwt-status" class="status" aria-live="polite"></div>
+      </div>
+      <div id="jwt-output" class="jwt-output hidden">
+        <div class="parse-card">
+          <div class="parse-card-header"><h3>Claims interpretados</h3></div>
+          <div id="jwt-claims" class="b2b-meta"></div>
+        </div>
+        <div class="parse-card">
+          <div class="parse-card-header">
+            <h3>Header</h3>
+            <button id="jwt-copy-header" class="btn mini" type="button">Copiar</button>
+          </div>
+          <pre id="jwt-header" class="json-block"></pre>
+        </div>
+        <div class="parse-card">
+          <div class="parse-card-header">
+            <h3>Payload</h3>
+            <button id="jwt-copy-payload" class="btn mini" type="button">Copiar</button>
+          </div>
+          <pre id="jwt-payload" class="json-block"></pre>
+        </div>
+        <div class="parse-card">
+          <div class="parse-card-header"><h3>Signature (base64url, sin verificar)</h3></div>
+          <pre id="jwt-signature" class="json-block"></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-hosts" class="view">
+      <header class="view-header">
+        <h2>Hosts (archivo)</h2>
+        <p>Edita <code id="hosts-path" class="mono"></code> linea por linea: agrega entradas, deshabilitalas (las comenta con <code>#</code>) o eliminalas. Requiere ejecutar la app como administrador para guardar cambios. Las lineas vacias del archivo no se muestran ni se preservan al guardar.</p>
+      </header>
+
+      <div id="hosts-admin-gate" class="plx-admin-gate hidden">
+        <div class="plx-admin-gate-icon">&#x26A0;</div>
+        <div class="plx-admin-gate-body">
+          <strong>No estas en modo administrador.</strong>
+          <p>Podes ver el archivo igual, pero para agregar, deshabilitar, editar o eliminar lineas la app debe correr elevada.</p>
+        </div>
+        <button id="hosts-admin-relaunch" class="btn primary" type="button">Entrar como administrador</button>
+      </div>
+
+      <div class="gu-toolbar">
+        <button id="hosts-reload" class="btn primary" type="button">Recargar</button>
+        <label class="gu-toolbar-field gu-toolbar-search">
+          <span>Buscar</span>
+          <input id="hosts-filter-text" type="text" placeholder="IP, host o comentario..." />
+        </label>
+        <label class="gu-toolbar-field hosts-filter-check">
+          <input id="hosts-filter-enabled" type="checkbox" checked />
+          <span>Mostrar deshabilitados</span>
+        </label>
+        <span id="hosts-count" class="badge">0</span>
+      </div>
+
+      <div id="hosts-status" class="status" aria-live="polite"></div>
+
+      <div class="onesignal-table-wrap gu-table-wrap hosts-table-wrap">
+        <table class="onesignal-table hosts-table" id="hosts-table">
+          <thead>
+            <tr>
+              <th class="hosts-col-check"></th>
+              <th>IP / host</th>
+              <th>Hosts / comentario</th>
+              <th class="hosts-col-actions"></th>
+            </tr>
+          </thead>
+          <tbody id="hosts-tbody">
+            <tr class="os-empty"><td colspan="4">Apreta "Recargar" para leer el archivo hosts.</td></tr>
+          </tbody>
+          <tfoot>
+            <tr class="hosts-new-row">
+              <td></td>
+              <td><input id="hosts-new-ip" type="text" class="mono" placeholder="127.0.0.1" /></td>
+              <td><input id="hosts-new-rest" type="text" placeholder="miapp.local" /></td>
+              <td><button id="hosts-add" class="btn primary" type="button">Agregar</button></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="dd-debtor-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-dd-close="1"></div>
+    <div class="modal-dialog" role="dialog" aria-labelledby="dd-debtor-modal-title">
+      <header class="modal-head">
+        <h3 id="dd-debtor-modal-title">Nuevo deudor</h3>
+        <button class="btn" type="button" data-dd-close="1">Cerrar</button>
+      </header>
+      <div class="modal-body">
+        <div class="vc-row">
+          <label for="dd-debtor-name">Nombre</label>
+          <input id="dd-debtor-name" type="text" placeholder="Nombre del deudor" />
+        </div>
+        <div class="vc-row">
+          <label for="dd-debtor-note">Nota (opcional)</label>
+          <input id="dd-debtor-note" type="text" placeholder="Ej: amigo, trabajo, fiado..." />
+        </div>
+        <div id="dd-debtor-modal-status" class="status" aria-live="polite"></div>
+      </div>
+      <footer class="modal-foot">
+        <div class="modal-actions">
+          <button class="btn" type="button" data-dd-close="1">Cancelar</button>
+          <button id="dd-debtor-save" class="btn primary" type="button">Guardar</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="dd-shared-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-dds-close="1"></div>
+    <div class="modal-dialog" role="dialog" aria-labelledby="dd-shared-modal-title">
+      <header class="modal-head">
+        <h3 id="dd-shared-modal-title">Gasto compartido</h3>
+        <button class="btn" type="button" data-dds-close="1">Cerrar</button>
+      </header>
+      <div class="modal-body">
+        <p class="modal-hint">Agrega la <strong>misma deuda</strong> a varios deudores. El monto total se divide en partes iguales (el resto por redondeo lo absorbe el ultimo). La fecha por defecto es la de hoy.</p>
+
+        <div class="vc-row">
+          <label for="dd-shared-desc">Descripcion</label>
+          <input id="dd-shared-desc" type="text" placeholder="Ej: Pizzas Compa" />
+        </div>
+
+        <div class="dd-shared-grid">
+          <div class="vc-row">
+            <label for="dd-shared-total">Monto total</label>
+            <input id="dd-shared-total" type="number" step="any" min="0" placeholder="0" />
+          </div>
+          <div class="vc-row">
+            <label for="dd-shared-date">Fecha</label>
+            <input id="dd-shared-date" type="date" />
+          </div>
+        </div>
+
+        <div class="vc-row dd-shared-includeme">
+          <label class="dd-shared-includeme-label">
+            <input id="dd-shared-includeme" type="checkbox" />
+            <span>Incluirme en la division del gasto (mi parte no genera deuda)</span>
+          </label>
+        </div>
+
+        <div class="dd-shared-list-head">
+          <strong>Deudores</strong>
+          <span class="vc-hint" id="dd-shared-count">0 seleccionados</span>
+          <div class="dd-shared-list-tools">
+            <input id="dd-shared-search" type="text" placeholder="Buscar..." />
+            <button class="btn mini" id="dd-shared-all" type="button">Todos</button>
+            <button class="btn mini" id="dd-shared-none" type="button">Ninguno</button>
+          </div>
+        </div>
+        <div id="dd-shared-list" class="dd-shared-list"></div>
+
+        <div id="dd-shared-preview" class="dd-shared-preview"></div>
+        <div id="dd-shared-modal-status" class="status" aria-live="polite"></div>
+      </div>
+      <footer class="modal-foot">
+        <div class="modal-actions">
+          <button class="btn" type="button" data-dds-close="1">Cancelar</button>
+          <button id="dd-shared-save" class="btn primary" type="button">Agregar a los seleccionados</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="dd-export-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-dde-close="1"></div>
+    <div class="modal-dialog" role="dialog" aria-labelledby="dd-export-modal-title">
+      <header class="modal-head">
+        <h3 id="dd-export-modal-title">Exportar deudas a Excel</h3>
+        <button class="btn" type="button" data-dde-close="1">Cerrar</button>
+      </header>
+      <div class="modal-body">
+        <p class="modal-hint">Elegi que deudores incluir. El Excel trae una hoja <strong>Resumen</strong> con los totales de cada uno y una hoja de detalle por deudor.</p>
+
+        <div class="vc-row dd-shared-includeme">
+          <label class="dd-shared-includeme-label">
+            <input id="dd-export-pending" type="checkbox" />
+            <span>Incluir solo las deudas pendientes (omitir las ya cobradas)</span>
+          </label>
+        </div>
+
+        <div class="dd-shared-list-head">
+          <strong>Deudores</strong>
+          <span class="vc-hint" id="dd-export-count">0 seleccionados</span>
+          <div class="dd-shared-list-tools">
+            <input id="dd-export-search" type="text" placeholder="Buscar..." />
+            <button class="btn mini" id="dd-export-all" type="button">Todos</button>
+            <button class="btn mini" id="dd-export-none" type="button">Ninguno</button>
+          </div>
+        </div>
+        <div id="dd-export-list" class="dd-shared-list"></div>
+
+        <div id="dd-export-preview" class="dd-shared-preview"></div>
+        <div id="dd-export-modal-status" class="status" aria-live="polite"></div>
+      </div>
+      <footer class="modal-foot">
+        <div class="modal-actions">
+          <button class="btn" type="button" data-dde-close="1">Cancelar</button>
+          <button id="dd-export-go" class="btn primary" type="button">Exportar seleccionados</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="dd-payment-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-ddp-close="1"></div>
+    <div class="modal-dialog" role="dialog" aria-labelledby="dd-payment-modal-title">
+      <header class="modal-head">
+        <h3 id="dd-payment-modal-title">Registrar pago</h3>
+        <button class="btn" type="button" data-ddp-close="1">Cerrar</button>
+      </header>
+      <div class="modal-body">
+        <p class="modal-hint">El pago salda la <strong>mayor cantidad de deudas posible</strong> (primero las mas baratas). Lo que sobre queda como <strong>saldo a favor</strong> y se usa en el proximo pago; si no alcanza, las deudas restantes quedan pendientes.</p>
+        <div class="dd-pay-target">
+          <span>Deudor:</span> <strong id="dd-pay-name"></strong>
+          <span class="dd-pay-sep">·</span>
+          <span>Pendiente:</span> <strong id="dd-pay-pending"></strong>
+          <span class="dd-pay-sep">·</span>
+          <span>A favor:</span> <strong id="dd-pay-credit"></strong>
+        </div>
+        <div class="vc-row">
+          <label for="dd-pay-amount">Monto del pago</label>
+          <input id="dd-pay-amount" type="number" step="any" min="0" placeholder="Ej: 4000" />
+        </div>
+        <div class="vc-row">
+          <label for="dd-pay-date">Fecha (opcional)</label>
+          <input id="dd-pay-date" type="date" />
+        </div>
+        <div class="vc-row">
+          <label for="dd-pay-note">Nota (opcional)</label>
+          <input id="dd-pay-note" type="text" placeholder="Ej: transferencia, efectivo..." />
+        </div>
+        <div id="dd-pay-preview" class="dd-pay-preview"></div>
+        <div id="dd-payment-modal-status" class="status" aria-live="polite"></div>
+      </div>
+      <footer class="modal-foot">
+        <div class="modal-actions">
+          <button class="btn" type="button" data-ddp-close="1">Cancelar</button>
+          <button id="dd-pay-save" class="btn primary" type="button">Aplicar pago</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="mg-item-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-mg-close="1"></div>
+    <div class="modal-dialog" role="dialog" aria-labelledby="mg-item-modal-title">
+      <header class="modal-head">
+        <h3 id="mg-item-modal-title">Nuevo gasto fijo</h3>
+        <button class="btn" type="button" data-mg-close="1">Cerrar</button>
+      </header>
+      <div class="modal-body">
+        <div class="vc-row">
+          <label for="mg-item-name">Nombre</label>
+          <input id="mg-item-name" type="text" placeholder="Ej: Luz (UTE)" />
+        </div>
+        <div class="vc-row">
+          <label for="mg-item-desc">Descripcion (opcional)</label>
+          <input id="mg-item-desc" type="text" placeholder="Ej: Factura mensual" />
+        </div>
+        <div class="dd-shared-grid">
+          <div class="vc-row">
+            <label for="mg-item-amount">Monto estimado (opcional)</label>
+            <input id="mg-item-amount" type="number" step="any" min="0" placeholder="0" />
+          </div>
+          <div class="vc-row">
+            <label for="mg-item-day">Dia de vencimiento</label>
+            <input id="mg-item-day" type="number" min="1" max="31" placeholder="20" />
+          </div>
+        </div>
+        <div class="vc-row">
+          <label for="mg-item-link">Link de pago (opcional)</label>
+          <input id="mg-item-link" type="url" placeholder="https://..." />
+        </div>
+        <div id="mg-item-modal-status" class="status" aria-live="polite"></div>
+      </div>
+      <footer class="modal-foot">
+        <div class="modal-actions">
+          <button class="btn" type="button" data-mg-close="1">Cancelar</button>
+          <button id="mg-item-save" class="btn primary" type="button">Guardar</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="gs-rules-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-gs-close="1"></div>
+    <div class="modal-dialog" role="dialog" aria-labelledby="gs-rules-title">
+      <header class="modal-head">
+        <h3 id="gs-rules-title">Categorias y reglas</h3>
+        <button class="btn" type="button" data-gs-close="1">Cerrar</button>
+      </header>
+      <div class="modal-body">
+        <p class="dd-detail-note">Cada regla asigna una categoria a los movimientos cuya descripcion contenga la palabra clave (no distingue mayusculas/minusculas). Se aplican en orden: la primera que coincide, gana. Los cambios solo afectan a las proximas importaciones, no recategorizan meses ya importados.</p>
+
+        <form id="gs-rule-form" class="dd-add-debt gs-rule-form">
+          <input id="gs-rule-keyword" type="text" placeholder="Palabra clave (ej: NETFLIX)" />
+          <input id="gs-rule-category" type="text" list="gs-category-options" placeholder="Categoria (ej: Suscripciones/Online)" />
+          <datalist id="gs-category-options"></datalist>
+          <button class="btn primary" type="submit">+ Regla</button>
+        </form>
+
+        <div class="onesignal-table-wrap">
+          <table class="onesignal-table dd-table">
+            <thead>
+              <tr>
+                <th>Palabra clave</th>
+                <th>Categoria</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="gs-rules-tbody"></tbody>
+          </table>
+        </div>
+
+        <div id="gs-rules-status" class="status" aria-live="polite"></div>
+      </div>
+      <footer class="modal-foot">
+        <div class="modal-actions">
+          <button id="gs-rules-close" class="btn" type="button" data-gs-close="1">Cerrar</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="cmdk-modal" class="modal hidden cmdk-modal" aria-hidden="true">
+    <div class="modal-backdrop" data-cmdk-close="1"></div>
+    <div class="modal-dialog cmdk-dialog" role="dialog" aria-label="Buscar vista">
+      <input type="text" id="cmdk-input" class="cmdk-input" placeholder="Ir a..." autocomplete="off" spellcheck="false" />
+      <div class="cmdk-list" id="cmdk-list"></div>
+    </div>
+  </div>
+
+  <div id="env-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-env-close="1"></div>
+    <div class="modal-dialog env-modal-dialog" role="dialog" aria-labelledby="env-modal-title">
+      <header class="modal-head">
+        <h3 id="env-modal-title">Ambiente DUCSA</h3>
+        <button class="btn" type="button" data-env-close="1">Cerrar</button>
+      </header>
+      <div class="modal-body">
+        <p class="modal-hint">Afecta Credenciales B2B, Usuarios B2C (Graph), Tarjetas/Devolucion Plexo y Reportes recurrentes.</p>
+        <div class="env-modal-opts">
+          <button class="env-opt" data-env="Testing" type="button">Testing</button>
+          <button class="env-opt" data-env="Produccion" type="button">Produccion</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="close-confirm-modal" class="modal hidden cc-modal" aria-hidden="true">
+    <div class="modal-backdrop" data-cc-cancel="1"></div>
+    <div class="modal-dialog cc-modal-dialog" role="dialog" aria-labelledby="cc-modal-title">
+      <div class="modal-body cc-modal-body">
+        <div class="cc-modal-icon" aria-hidden="true">&#9099;</div>
+        <h3 id="cc-modal-title">Cerrar Dev Launcher</h3>
+        <p class="cc-modal-text">Podes cerrar la app por completo o dejarla minimizada en la bandeja del sistema.</p>
+      </div>
+      <footer class="modal-foot cc-modal-foot">
+        <div class="modal-actions cc-modal-actions">
+          <button id="cc-cancel" class="btn" type="button">Cancelar</button>
+          <button id="cc-minimize" class="btn" type="button">Minimizar a la bandeja</button>
+          <button id="cc-restart" class="btn" type="button">Reiniciar la app</button>
+          <button id="cc-quit" class="btn primary" type="button">Cerrar la app</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="bootOverlay.js"></script>
+  <script src="skeleton.js"></script>
+  <script src="app.js"></script>
+  <script src="sections.js"></script>
+  <script src="envSelector.js"></script>
+  <script src="commandPalette.js"></script>
+  <script src="closeConfirmView.js"></script>
+  <script src="views/projectsView.js"></script>
+  <script src="views/qrGeneratorView.js"></script>
+  <script src="views/qrParserView.js"></script>
+  <script src="views/qrReadView.js"></script>
+  <script src="views/ducsaToolsView.js"></script>
+  <script src="views/b2bCredentialsView.js"></script>
+  <script src="views/graphUsersView.js"></script>
+  <script src="views/plexoCardsView.js"></script>
+  <script src="views/plexoRefundView.js"></script>
+  <script src="views/facturaView.js"></script>
+  <script src="views/reportesView.js"></script>
+  <script src="views/oneSignalView.js"></script>
+  <script src="views/osDirectView.js"></script>
+  <script src="views/outlookView.js"></script>
+  <script src="views/jiraView.js"></script>
+  <script src="views/jsonToolView.js"></script>
+  <script src="views/jwtDecodeView.js"></script>
+  <script src="views/hostsView.js"></script>
+  <script src="views/settingsView.js"></script>
+</body>
+</html>

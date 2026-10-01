@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.log
+
+# Credenciales reales embebidas (compartidas por todo el equipo). Se empaquetan
+# dentro del .exe al buildear (npm run dist), pero nunca se commitean.
+src/config/sendQr.config.js
+src/config/oneSignal.config.js
